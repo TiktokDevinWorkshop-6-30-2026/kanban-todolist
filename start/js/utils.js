@@ -1,3 +1,13 @@
+function escapeHTML(str) {
+    if (!str) return '';
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function formatRelativeTime(timestamp) {
     if (!timestamp) return 'Never';
     const mins = Math.floor((Date.now() - timestamp) / 60000);
