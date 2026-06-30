@@ -29,6 +29,17 @@ function setupEventListeners() {
         }
     });
 
+    document.getElementById('saveEditBtn').addEventListener('click', saveEditedTask);
+
+    const taskTitleInput = document.getElementById('taskTitleInput');
+    const taskDescInput = document.getElementById('taskDescInput');
+    taskTitleInput.addEventListener('input', () => {
+        document.getElementById('taskTitleCounter').textContent = `${40 - taskTitleInput.value.length} left`;
+    });
+    taskDescInput.addEventListener('input', () => {
+        document.getElementById('taskDescCounter').textContent = `${150 - taskDescInput.value.length} left`;
+    });
+
     setupDragAndDrop();
 }
 

@@ -59,7 +59,12 @@ function createTaskCardDOM(task) {
 
     const completedMarkup = (task.column === 'done' && task.completedAt)
         ? `<span class="task-time"><i class="fas fa-check-circle"></i> Completed ${formatTimestamp(task.completedAt)}</span>`
-        : '';
+        : `<span class="task-time">${formatRelativeTime(task.createdAt)}</span>`;
+
+    const isDone = task.column === 'done';
+    const editBtn = isDone
+        ? `<button class="btn-card-action" title="View Task" onclick="openTaskModal('${task.id}')"><i class="fas fa-expand-alt"></i></button>`
+        : `<button class="btn-card-action" title="Edit Task" onclick="openTaskModal('${task.id}')"><i class="fas fa-pencil-alt"></i></button>`;
 
     card.innerHTML = `
         <div class="task-header">
@@ -69,7 +74,10 @@ function createTaskCardDOM(task) {
         <h4 class="task-title">${task.title}</h4>
         ${descMarkup}
         <div class="task-footer">
-            ${completedMarkup}
+            <div class="card-actions-left">
+                ${editBtn}
+                ${completedMarkup}
+            </div>
             <div class="card-nav-arrows">${moveButtons}</div>
         </div>
     `;
@@ -108,4 +116,19 @@ function render() {
     document.getElementById(COLUMN_COUNTS.todo).textContent = counts.todo;
     document.getElementById(COLUMN_COUNTS.progress).textContent = counts.progress;
     document.getElementById(COLUMN_COUNTS.done).textContent = counts.done;
+}
+
+// Refresh only the relative "time ago" labels without a full re-render.
+function renderTimestampsOnly() {
+    document.querySelectorAll('.task-card').forEach((card) => {
+        const task = state.tasks.find(t => t.id === card.dataset.id);
+        if (!task) return;
+        const timeEl = card.querySelector('.card-actions-left .task-time');
+        if (!timeEl) return;
+        if (task.column === 'done' && task.completedAt) {
+            timeEl.innerHTML = `<i class="fas fa-check-circle"></i> Completed ${formatTimestamp(task.completedAt)}`;
+        } else {
+            timeEl.textContent = formatRelativeTime(task.createdAt);
+        }
+    });
 }
