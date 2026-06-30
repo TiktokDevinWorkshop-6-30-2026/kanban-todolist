@@ -106,13 +106,23 @@ function saveEditedTask() {
 
 async function deleteTask(taskId) {
     const task = state.tasks.find(t => t.id === taskId);
-    const label = task ? task.title : 'this task';
-    const confirmed = await requestConfirmation('Delete Task', `Are you sure you want to permanently delete "${label}"?`);
+    if (!task) return;
+    const label = task.title;
+    const confirmed = await requestConfirmation('Delete Task', `Are you sure you want to delete "${label}"?`);
     if (!confirmed) return;
+    const deletedTask = { ...task };
     state.tasks = state.tasks.filter(t => t.id !== taskId);
     saveToStorage();
     render();
-    showToast('Task deleted.', 'info');
+    showToast('Task deleted.', 'info', {
+        label: 'Undo',
+        onClick: () => {
+            state.tasks.push(deletedTask);
+            saveToStorage();
+            render();
+            showToast('Task restored.', 'success');
+        }
+    });
 }
 
 function moveTask(taskId, targetColumn) {
