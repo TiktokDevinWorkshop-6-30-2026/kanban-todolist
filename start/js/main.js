@@ -10,4 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     render();
     setInterval(renderTimestampsOnly, 30000);
+
+    // Check whether the backend is configured for Devin sessions
+    refreshDevinConfig();
+
+    // Begin global polling for any tasks that already have a Devin session
+    startDevinPolling();
+    pollDevinSessions();
 });

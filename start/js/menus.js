@@ -99,7 +99,19 @@ function showContextMenu(clientX, clientY, taskId) {
         }
     }
 
+    // Devin context menu items
+    var ctxRunDevin = document.getElementById('ctxRunDevin');
+    var ctxOpenDevin = document.getElementById('ctxOpenDevin');
+    var ctxDevinDivider = document.getElementById('ctxDevinDivider');
+    var canRunDevin = (typeof devinEnabled !== 'undefined' && devinEnabled) && isTodo && !task.devinSessionId;
+    var canOpenDevin = Boolean(task.devinSessionId && task.devinSessionUrl);
+    ctxRunDevin.style.display = canRunDevin ? 'flex' : 'none';
+    ctxOpenDevin.style.display = canOpenDevin ? 'flex' : 'none';
+    ctxDevinDivider.style.display = (canRunDevin || canOpenDevin) ? 'block' : 'none';
+
     document.getElementById('ctxView').onclick = function() { openViewModal(taskId); hideContextMenu(); };
+    ctxRunDevin.onclick = function() { if (canRunDevin) openDevinModal(taskId); hideContextMenu(); };
+    ctxOpenDevin.onclick = function() { if (canOpenDevin) openDevinSession(taskId); hideContextMenu(); };
     ctxEdit.onclick = function() { if (!isDone) openEditModal(taskId); hideContextMenu(); };
     ctxMoveTodo.onclick = function() { moveTask(taskId, 'todo'); hideContextMenu(); };
     ctxMoveProgress.onclick = function() { moveTask(taskId, 'progress'); hideContextMenu(); };
