@@ -34,6 +34,9 @@
                     <option value="priority-desc">Highest Priority</option>
                     <option value="title-asc">Title (A-Z)</option>
                 </select>
+                <button id="analyticsToggleBtn" class="btn-bulk-neutral" title="Toggle Analytics">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </button>
                 <div class="header-actions-dropdown">
                     <button id="headerActionsBtn" class="btn-bulk-neutral" title="Board actions">
                         <i class="fas fa-ellipsis-h"></i> Actions
@@ -114,6 +117,14 @@
                 <div class="column-body no-scrollbar" id="bodyDone"></div>
             </section>
         </main>
+
+        <div class="analytics-panel hidden" id="analyticsPanel">
+            <div class="analytics-header">
+                <h3><i class="fas fa-chart-line"></i> Task Analytics Dashboard</h3>
+                <button class="btn-modal-close" id="analyticsCloseBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="analytics-content" id="analyticsContent"></div>
+        </div>
     </div>
 
     <!-- Task Details / Edit Modal -->

@@ -115,6 +115,29 @@ function setupEventListeners() {
         });
     });
 
+    // Analytics toggle
+    const analyticsBtn = document.getElementById('analyticsToggleBtn');
+    const analyticsPanel = document.getElementById('analyticsPanel');
+    const analyticsCloseBtn = document.getElementById('analyticsCloseBtn');
+    const boardContainer = document.querySelector('.board-container');
+    if (analyticsBtn && analyticsPanel) {
+        analyticsBtn.addEventListener('click', () => {
+            const showing = analyticsPanel.classList.toggle('hidden');
+            if (!showing) {
+                boardContainer.classList.add('hidden');
+                renderAnalytics();
+            } else {
+                boardContainer.classList.remove('hidden');
+            }
+        });
+        if (analyticsCloseBtn) {
+            analyticsCloseBtn.addEventListener('click', () => {
+                analyticsPanel.classList.add('hidden');
+                boardContainer.classList.remove('hidden');
+            });
+        }
+    }
+
     // Dark mode toggle
     const themeBtn = document.getElementById('themeToggleBtn');
     if (themeBtn) {

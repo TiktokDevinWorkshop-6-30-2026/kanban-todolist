@@ -29,6 +29,17 @@ function createTaskCardDOM(task) {
         ? '<p class="task-desc-excerpt">' + task.desc + '</p>'
         : '<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>';
 
+    // Duration display
+    let durationHtml = '';
+    const dur = getTaskDuration(task);
+    if (dur !== null) {
+        if (task.column === 'done') {
+            durationHtml = '<span class="task-duration done-duration"><i class="fas fa-stopwatch"></i> Completed in ' + formatDuration(dur) + '</span>';
+        } else if (task.column === 'progress') {
+            durationHtml = '<span class="task-duration progress-duration"><i class="fas fa-hourglass-half"></i> In progress for ' + formatDuration(dur) + '</span>';
+        }
+    }
+
     let arrowsHtml = '';
     if (task.column === 'todo') {
         arrowsHtml = '<div class="card-nav-arrows"><button class="btn-arrow" onclick="moveTask(\'' + task.id + '\', \'progress\')" title="Move to In Progress"><i class="fas fa-arrow-right"></i></button></div>';
@@ -75,6 +86,7 @@ function createTaskCardDOM(task) {
         '</div>' +
         '<h4 class="task-title">' + task.title + '</h4>' +
         descHtml +
+        durationHtml +
         '<div class="task-footer">' +
             '<div class="card-actions-left">' +
                 '<button class="btn-card-action" onclick="openTaskModal(\'' + task.id + '\')" title="' + editTitle + '"><i class="fas ' + editIcon + '"></i></button>' +
@@ -159,6 +171,85 @@ function render() {
     checkEmptyState(bodyDone, 'done');
 
     renderTicker(countTodo, countProgress, countDone);
+
+    // Update analytics if panel is visible
+    const analyticsPanel = document.getElementById('analyticsPanel');
+    if (analyticsPanel && !analyticsPanel.classList.contains('hidden')) {
+        renderAnalytics();
+    }
+}
+
+function renderAnalytics() {
+    const panel = document.getElementById('analyticsContent');
+    if (!panel) return;
+    const a = computeAnalytics(state.tasks);
+
+    const maxDaily = Math.max(...a.dailyCompletions.map(d => d.count), 1);
+    let chartBars = '';
+    a.dailyCompletions.forEach(d => {
+        const pct = Math.round((d.count / maxDaily) * 100);
+        chartBars += '<div class="chart-col">' +
+            '<div class="chart-bar-wrap"><div class="chart-bar" style="height:' + pct + '%"><span class="chart-val">' + d.count + '</span></div></div>' +
+            '<span class="chart-label">' + d.label + '</span></div>';
+    });
+
+    let inProgressRows = '';
+    a.inProgressTimes.forEach(t => {
+        inProgressRows += '<tr><td>' + t.title + '</td><td><span class="badge-priority ' + t.priority + '">' + t.priority + '</span></td><td>' + formatDuration(t.elapsed) + '</td></tr>';
+    });
+
+    let completedRows = '';
+    a.completedDetails.forEach(t => {
+        completedRows += '<tr><td>' + t.title + '</td><td><span class="badge-priority ' + t.priority + '">' + t.priority + '</span></td><td>' + formatDuration(t.duration) + '</td><td>' + formatRelativeTime(t.completedAt) + '</td></tr>';
+    });
+
+    panel.innerHTML =
+        '<div class="analytics-grid">' +
+            '<div class="stat-card"><div class="stat-icon"><i class="fas fa-tasks"></i></div><div class="stat-info"><span class="stat-value">' + a.total + '</span><span class="stat-label">Total Tasks</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon todo-icon"><i class="fas fa-clipboard-list"></i></div><div class="stat-info"><span class="stat-value">' + a.todoCount + '</span><span class="stat-label">To Do</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon progress-icon"><i class="fas fa-spinner"></i></div><div class="stat-info"><span class="stat-value">' + a.progressCount + '</span><span class="stat-label">In Progress</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon done-icon"><i class="fas fa-check-circle"></i></div><div class="stat-info"><span class="stat-value">' + a.doneCount + '</span><span class="stat-label">Done</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon rate-icon"><i class="fas fa-percentage"></i></div><div class="stat-info"><span class="stat-value">' + a.completionRate + '%</span><span class="stat-label">Completion Rate</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon time-icon"><i class="fas fa-clock"></i></div><div class="stat-info"><span class="stat-value">' + formatDuration(a.avgDuration) + '</span><span class="stat-label">Avg Duration</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon fast-icon"><i class="fas fa-bolt"></i></div><div class="stat-info"><span class="stat-value">' + formatDuration(a.fastest) + '</span><span class="stat-label">Fastest</span></div></div>' +
+            '<div class="stat-card"><div class="stat-icon slow-icon"><i class="fas fa-hourglass-end"></i></div><div class="stat-info"><span class="stat-value">' + formatDuration(a.slowest) + '</span><span class="stat-label">Slowest</span></div></div>' +
+        '</div>' +
+
+        '<div class="analytics-section">' +
+            '<h4><i class="fas fa-chart-bar"></i> Completions (Last 7 Days)</h4>' +
+            '<div class="chart-container">' + chartBars + '</div>' +
+        '</div>' +
+
+        '<div class="analytics-row">' +
+            '<div class="analytics-section half">' +
+                '<h4><i class="fas fa-chart-pie"></i> Tasks by Priority</h4>' +
+                '<div class="priority-breakdown">' +
+                    '<div class="prio-row"><span class="prio-label low">Low</span><div class="prio-bar-wrap"><div class="prio-bar low" style="width:' + (a.total ? Math.round(a.byPriority.low / a.total * 100) : 0) + '%"></div></div><span class="prio-count">' + a.byPriority.low + '</span></div>' +
+                    '<div class="prio-row"><span class="prio-label medium">Medium</span><div class="prio-bar-wrap"><div class="prio-bar medium" style="width:' + (a.total ? Math.round(a.byPriority.medium / a.total * 100) : 0) + '%"></div></div><span class="prio-count">' + a.byPriority.medium + '</span></div>' +
+                    '<div class="prio-row"><span class="prio-label high">High</span><div class="prio-bar-wrap"><div class="prio-bar high" style="width:' + (a.total ? Math.round(a.byPriority.high / a.total * 100) : 0) + '%"></div></div><span class="prio-count">' + a.byPriority.high + '</span></div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="analytics-section half">' +
+                '<h4><i class="fas fa-trophy"></i> Completed by Priority</h4>' +
+                '<div class="priority-breakdown">' +
+                    '<div class="prio-row"><span class="prio-label low">Low</span><div class="prio-bar-wrap"><div class="prio-bar low" style="width:' + (a.doneCount ? Math.round(a.doneByPriority.low / a.doneCount * 100) : 0) + '%"></div></div><span class="prio-count">' + a.doneByPriority.low + '</span></div>' +
+                    '<div class="prio-row"><span class="prio-label medium">Medium</span><div class="prio-bar-wrap"><div class="prio-bar medium" style="width:' + (a.doneCount ? Math.round(a.doneByPriority.medium / a.doneCount * 100) : 0) + '%"></div></div><span class="prio-count">' + a.doneByPriority.medium + '</span></div>' +
+                    '<div class="prio-row"><span class="prio-label high">High</span><div class="prio-bar-wrap"><div class="prio-bar high" style="width:' + (a.doneCount ? Math.round(a.doneByPriority.high / a.doneCount * 100) : 0) + '%"></div></div><span class="prio-count">' + a.doneByPriority.high + '</span></div>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+
+        (a.inProgressTimes.length > 0 ?
+        '<div class="analytics-section">' +
+            '<h4><i class="fas fa-hourglass-half"></i> In Progress — Elapsed Time</h4>' +
+            '<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Task</th><th>Priority</th><th>Elapsed</th></tr></thead><tbody>' + inProgressRows + '</tbody></table></div>' +
+        '</div>' : '') +
+
+        (a.completedDetails.length > 0 ?
+        '<div class="analytics-section">' +
+            '<h4><i class="fas fa-stopwatch"></i> Completed Task Durations</h4>' +
+            '<div class="analytics-table-wrap"><table class="analytics-table"><thead><tr><th>Task</th><th>Priority</th><th>Duration</th><th>Completed</th></tr></thead><tbody>' + completedRows + '</tbody></table></div>' +
+        '</div>' : '');
 }
 
 function renderTicker(countTodo, countProgress, countDone) {

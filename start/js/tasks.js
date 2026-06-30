@@ -64,9 +64,20 @@ function moveTask(taskId, targetColumn) {
             return;
         }
         task.completed = true;
+        task.completedAt = Date.now();
     }
-    if (targetColumn === 'todo') task.completed = false;
-    if ((oldColumn === 'done' || oldColumn === 'progress') && (targetColumn === 'todo' || targetColumn === 'progress')) task.completed = false;
+    if (targetColumn === 'progress' && !task.startedAt) {
+        task.startedAt = Date.now();
+    }
+    if (targetColumn === 'todo') {
+        task.completed = false;
+        task.completedAt = null;
+    }
+    if ((oldColumn === 'done' || oldColumn === 'progress') && (targetColumn === 'todo' || targetColumn === 'progress')) {
+        task.completed = false;
+        if (targetColumn === 'todo') task.completedAt = null;
+        if (targetColumn === 'progress') task.completedAt = null;
+    }
     task.column = targetColumn;
     saveToStorage();
     render();
