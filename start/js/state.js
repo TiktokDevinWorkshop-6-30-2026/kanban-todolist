@@ -1,5 +1,5 @@
 const LOCAL_STORAGE_KEY = 'daily-task-tracker';
-let state = { tasks: [], filterPriority: 'all', sortBy: 'date-desc', searchQuery: '' };
+let state = { tasks: [], filterPriority: 'all', sortBy: 'date-desc', searchQuery: '', activeTab: 'todo' };
 
 function createDemoTasks() {
     return [
@@ -9,6 +9,11 @@ function createDemoTasks() {
         { id:'demo-4', title:'Add tests for task rules', desc:'Unit-test the move/add/edit logic.',                  priority:'medium', column:'progress', createdAt:Date.now()-6*3600*1000,  editedAt:null,                  completed:false },
         { id:'demo-5', title:'Export and import tasks as JSON', desc:'Backup/restore so data is not trapped here.',  priority:'low',    column:'done',     createdAt:Date.now()-25*3600*1000, editedAt:Date.now()-24*3600*1000, completed:true  }
     ];
+}
+
+function loadDemoData() {
+    state.tasks = createDemoTasks();
+    saveToStorage();
 }
 
 function loadFromStorage() {

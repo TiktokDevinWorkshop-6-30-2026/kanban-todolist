@@ -15,6 +15,16 @@ function createTaskCardDOM(task) {
     card.className = 'task-card priority-' + task.priority;
     card.setAttribute('data-id', task.id);
 
+    // Drag-and-drop (not for Done tasks)
+    if (task.column !== 'done') {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', (e) => { card.classList.add('dragging'); e.dataTransfer.setData('text/plain', task.id); });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    }
+
+    // Context menu
+    card.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); showContextMenu(e.clientX, e.clientY, task.id); });
+
     const descHtml = task.desc
         ? '<p class="task-desc-excerpt">' + task.desc + '</p>'
         : '<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>';
@@ -36,7 +46,7 @@ function createTaskCardDOM(task) {
 
     card.innerHTML =
         '<div class="task-header">' +
-            '<span class="badge-priority ' + task.priority + '">' + task.priority + '</span>' +
+            '<span class="badge-priority ' + task.priority + '" onclick="openBadgePriorityMenu(event, \'' + task.id + '\')">' + task.priority + '</span>' +
             '<span class="task-time">' + formatRelativeTime(task.createdAt) + '</span>' +
         '</div>' +
         '<h4 class="task-title">' + task.title + '</h4>' +
@@ -110,6 +120,14 @@ function render() {
     document.getElementById('countTodo').textContent = countTodo;
     document.getElementById('countProgress').textContent = countProgress;
     document.getElementById('countDone').textContent = countDone;
+
+    // Update mobile tab badges
+    const todoTabBadge = document.getElementById('todoTabBadge');
+    const progressTabBadge = document.getElementById('progressTabBadge');
+    const doneTabBadge = document.getElementById('doneTabBadge');
+    if (todoTabBadge) todoTabBadge.textContent = countTodo;
+    if (progressTabBadge) progressTabBadge.textContent = countProgress;
+    if (doneTabBadge) doneTabBadge.textContent = countDone;
 
     checkEmptyState(bodyTodo, 'todo');
     checkEmptyState(bodyProgress, 'progress');
