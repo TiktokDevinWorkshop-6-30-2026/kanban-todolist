@@ -23,7 +23,10 @@ function addNewTodo() {
         title: title,
         desc: desc,
         priority: priority,
-        createdAt: new Date().toISOString()
+        column: 'todo',
+        createdAt: Date.now(),
+        editedAt: null,
+        completed: false
     };
 
     state.tasks.push(task);
@@ -36,6 +39,31 @@ function addNewTodo() {
     document.getElementById('descCounter').textContent = '150 left';
     document.getElementById('addTodoCard').classList.remove('expanded');
 
+    render();
+}
+
+function moveTask(taskId, targetColumn) {
+    var task = state.tasks.find(function(t) { return t.id === taskId; });
+    if (!task || task.column === targetColumn) return;
+
+    var oldColumn = task.column;
+
+    if (targetColumn === 'done') {
+        if (oldColumn === 'todo') {
+            alert('Tasks must go through "In Progress" before entering "Done"!');
+            return;
+        }
+        task.completed = true;
+    }
+
+    if (targetColumn === 'todo') task.completed = false;
+
+    if ((oldColumn === 'done' || oldColumn === 'progress') && (targetColumn === 'todo' || targetColumn === 'progress')) {
+        task.completed = false;
+    }
+
+    task.column = targetColumn;
+    saveToStorage();
     render();
 }
 
