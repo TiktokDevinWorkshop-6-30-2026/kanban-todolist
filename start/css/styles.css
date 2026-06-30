@@ -869,6 +869,22 @@ body {
     font-size: 0.8rem;
     font-weight: 500;
     color: var(--text-secondary);
+    flex: 1;
+}
+.toast-action {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+.toast-action:hover {
+    background-color: var(--primary);
+    color: var(--primary-contrast);
 }
 
 /* Mobile column tabs (activated in media query) */
