@@ -1,3 +1,9 @@
+function formatTimestamp(ms) {
+    return new Date(ms).toLocaleString(undefined, {
+        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+    });
+}
+
 const COLUMN_BODIES = {
     todo: 'bodyTodo',
     progress: 'bodyProgress',
@@ -51,6 +57,10 @@ function createTaskCardDOM(task) {
 
     const moveButtons = MOVE_BUTTONS[task.column].replaceAll('%ID%', task.id);
 
+    const completedMarkup = (task.column === 'done' && task.completedAt)
+        ? `<span class="task-time"><i class="fas fa-check-circle"></i> Completed ${formatTimestamp(task.completedAt)}</span>`
+        : '';
+
     card.innerHTML = `
         <div class="task-header">
             <span class="badge-priority ${task.priority}">${task.priority}</span>
@@ -59,6 +69,7 @@ function createTaskCardDOM(task) {
         <h4 class="task-title">${task.title}</h4>
         ${descMarkup}
         <div class="task-footer">
+            ${completedMarkup}
             <div class="card-nav-arrows">${moveButtons}</div>
         </div>
     `;

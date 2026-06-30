@@ -428,6 +428,15 @@ body {
     padding-top: 8px;
 }
 
+.task-time {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .card-nav-arrows {
     display: flex;
     align-items: center;

@@ -26,7 +26,8 @@ function addNewTodo() {
         column: 'todo',
         createdAt: Date.now(),
         editedAt: null,
-        completed: false
+        completed: false,
+        completedAt: null
     });
     saveToStorage();
 
@@ -58,10 +59,15 @@ function applyColumnTransition(task, targetColumn) {
             return false;
         }
         task.completed = true;
+        task.completedAt = Date.now();
     }
     if (targetColumn === 'todo') task.completed = false;
     if ((oldColumn === 'done' || oldColumn === 'progress') && (targetColumn === 'todo' || targetColumn === 'progress')) {
         task.completed = false;
+    }
+    // Leaving Done clears the completion timestamp.
+    if (oldColumn === 'done' && targetColumn !== 'done') {
+        task.completedAt = null;
     }
 
     task.column = targetColumn;
