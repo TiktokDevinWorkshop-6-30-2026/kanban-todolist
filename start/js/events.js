@@ -114,4 +114,17 @@ function setupEventListeners() {
             document.getElementById(colMap[tab]).classList.add('active-tab');
         });
     });
+
+    // Dark mode toggle
+    const themeBtn = document.getElementById('themeToggleBtn');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('dtt-theme', isDark ? 'dark' : 'light');
+            themeBtn.innerHTML = isDark
+                ? '<i class="fas fa-sun"></i>'
+                : '<i class="fas fa-moon"></i>';
+            showToast(isDark ? 'Dark mode enabled.' : 'Light mode enabled.', 'info');
+        });
+    }
 }

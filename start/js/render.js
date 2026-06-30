@@ -157,4 +157,46 @@ function render() {
     checkEmptyState(bodyTodo, 'todo');
     checkEmptyState(bodyProgress, 'progress');
     checkEmptyState(bodyDone, 'done');
+
+    renderTicker(countTodo, countProgress, countDone);
+}
+
+function renderTicker(countTodo, countProgress, countDone) {
+    const el = document.getElementById('tickerContent');
+    if (!el) return;
+
+    const tips = [
+        'Break large tasks into smaller steps for faster progress',
+        'Set high priority only for truly urgent items',
+        'Review your Done column weekly to celebrate wins',
+        'Use descriptions to capture context you will forget later',
+        'Drag cards between columns for quick status updates',
+        'Right-click any card for a quick-action context menu',
+        'Use the search bar to instantly find any task by title or description',
+        'Filter by priority to focus on what matters most',
+        'Click a priority badge to change it without opening the modal'
+    ];
+    const tip = tips[Math.floor(Math.random() * tips.length)];
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    const total = countTodo + countProgress + countDone;
+    const items = [];
+    items.push('<span class="ticker-item"><i class="fas fa-tasks"></i> ' + total + ' total tasks</span>');
+    items.push('<span class="ticker-sep">\u2022</span>');
+    items.push('<span class="ticker-item ticker-todo"><i class="fas fa-clipboard-list"></i> ' + countTodo + ' To Do</span>');
+    items.push('<span class="ticker-sep">\u2022</span>');
+    items.push('<span class="ticker-item ticker-progress"><i class="fas fa-spinner"></i> ' + countProgress + ' In Progress</span>');
+    items.push('<span class="ticker-sep">\u2022</span>');
+    items.push('<span class="ticker-item ticker-done"><i class="fas fa-check-circle"></i> ' + countDone + ' Done</span>');
+    items.push('<span class="ticker-sep">\u2022</span>');
+    items.push('<span class="ticker-item ticker-tip"><i class="fas fa-lightbulb"></i> Tip: ' + tip + '</span>');
+    items.push('<span class="ticker-sep">\u2022</span>');
+    items.push('<span class="ticker-item ticker-date"><i class="fas fa-calendar-day"></i> ' + dateStr + ' \u2014 ' + timeStr + '</span>');
+
+    // Duplicate for seamless loop
+    const content = items.join(' ');
+    el.innerHTML = content + ' &nbsp;&nbsp;&nbsp;&nbsp; ' + content;
 }
