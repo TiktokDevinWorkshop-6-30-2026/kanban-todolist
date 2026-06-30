@@ -10,12 +10,12 @@ function addNewTodo() {
     const priority = priorityInput.value;
 
     if (title.length < 3 || title.length > 40) {
-        alert('Task title must be between 3 and 40 characters.');
+        showToast('Task title must be between 3 and 40 characters.', 'warning');
         input.focus();
         return;
     }
     if (desc.length > 150) {
-        alert('Description must be 150 characters or fewer.');
+        showToast('Description must be 150 characters or fewer.', 'warning');
         descInput.focus();
         return;
     }
@@ -40,6 +40,7 @@ function addNewTodo() {
     document.getElementById('addTodoCard').classList.remove('expanded');
     input.focus();
     render();
+    showToast('Task added.', 'success');
 }
 
 function moveTask(taskId, targetColumn) {
@@ -48,7 +49,7 @@ function moveTask(taskId, targetColumn) {
     const oldColumn = task.column;
     if (targetColumn === 'done') {
         if (oldColumn === 'todo') {
-            alert('Move the task to In Progress before marking it Done.');
+            showToast('Move the task to In Progress before marking it Done.', 'warning');
             return;
         }
         task.completed = true;
@@ -58,6 +59,8 @@ function moveTask(taskId, targetColumn) {
     task.column = targetColumn;
     saveToStorage();
     render();
+    const labels = { todo: 'To Do', progress: 'In Progress', done: 'Done' };
+    showToast(`Task moved to ${labels[targetColumn]}.`, 'success');
 }
 
 function openTaskModal(taskId) {
@@ -99,11 +102,11 @@ function saveEditedTask() {
     const priority = document.getElementById('taskPriorityInput').value;
 
     if (title.length < 3 || title.length > 40) {
-        alert('Task title must be between 3 and 40 characters.');
+        showToast('Task title must be between 3 and 40 characters.', 'warning');
         return;
     }
     if (desc.length > 150) {
-        alert('Description must be 150 characters or fewer.');
+        showToast('Description must be 150 characters or fewer.', 'warning');
         return;
     }
 
@@ -114,6 +117,7 @@ function saveEditedTask() {
     saveToStorage();
     closeModal('taskModal');
     render();
+    showToast('Task updated.', 'success');
 }
 
 async function deleteTask(taskId) {
@@ -124,4 +128,5 @@ async function deleteTask(taskId) {
     state.tasks = state.tasks.filter(t => t.id !== taskId);
     saveToStorage();
     render();
+    showToast('Task deleted.', 'success');
 }

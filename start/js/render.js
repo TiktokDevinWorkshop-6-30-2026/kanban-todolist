@@ -22,6 +22,13 @@ function createTaskCardDOM(task) {
     card.className = `task-card priority-${task.priority}`;
     card.setAttribute('data-id', task.id);
 
+    if (task.column !== 'done') {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', (e) => { card.classList.add('dragging'); e.dataTransfer.setData('text/plain', task.id); });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    }
+    card.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); showContextMenu(e.clientX, e.clientY, task.id); });
+
     const descHtml = task.desc
         ? `<p class="task-desc-excerpt">${task.desc}</p>`
         : `<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>`;
@@ -37,7 +44,7 @@ function createTaskCardDOM(task) {
     card.innerHTML = `
         <div class="task-card-header">
             <div class="task-card-title-group">
-                <span class="badge-priority ${task.priority}">${task.priority}</span>
+                <span class="badge-priority ${task.priority}" onclick="openBadgePriorityMenu(event, '${task.id}')">${task.priority}</span>
                 <h4 class="task-title">${task.title}</h4>
             </div>
             <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
@@ -103,6 +110,10 @@ function render() {
     document.getElementById('countTodo').textContent = counts.todo;
     document.getElementById('countProgress').textContent = counts.progress;
     document.getElementById('countDone').textContent = counts.done;
+
+    document.getElementById('todoTabBadge').textContent = counts.todo;
+    document.getElementById('progressTabBadge').textContent = counts.progress;
+    document.getElementById('doneTabBadge').textContent = counts.done;
 
     Object.keys(bodies).forEach(column => checkEmptyState(bodies[column], column));
 }
