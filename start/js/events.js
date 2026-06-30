@@ -40,6 +40,13 @@ function setupEventListeners() {
         document.getElementById('taskDescCounter').textContent = `${150 - taskDescInput.value.length} left`;
     });
 
+    document.getElementById('priorityFilter').value = state.filterPriority;
+    document.getElementById('sortBySelect').value = state.sortBy;
+
+    document.getElementById('searchInput').addEventListener('input', (e) => { state.searchQuery = e.target.value.trim(); render(); });
+    document.getElementById('priorityFilter').addEventListener('change', (e) => { state.filterPriority = e.target.value; saveToStorage(); render(); });
+    document.getElementById('sortBySelect').addEventListener('change', (e) => { state.sortBy = e.target.value; saveToStorage(); render(); });
+
     setupDragAndDrop();
 }
 
