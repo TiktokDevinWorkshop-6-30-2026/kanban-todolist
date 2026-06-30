@@ -3,4 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     render();
     setInterval(renderTimestampsOnly, 30000);
+    refreshDevinConfig();
+    startDevinPolling();
+    pollDevinSessions();
 });

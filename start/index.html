@@ -171,6 +171,27 @@
         </div>
     </div>
 
+    <!-- Devin Kickoff Modal -->
+    <div class="modal-overlay" id="devinModal">
+        <div class="modal-container">
+            <header class="modal-header">
+                <h3>Run with Devin</h3>
+                <button class="btn-modal-close" onclick="closeDevinModal()"><i class="fas fa-times"></i></button>
+            </header>
+            <div class="modal-body">
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">Task: <strong id="devinModalTaskTitle"></strong></p>
+                <div class="form-group">
+                    <label for="devinPromptInput">What should Devin do?</label>
+                    <textarea id="devinPromptInput" class="form-textarea" rows="4" placeholder="Describe the task for Devin..."></textarea>
+                </div>
+            </div>
+            <footer class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDevinModal()">Cancel</button>
+                <button class="btn btn-primary" id="devinKickoffBtn" onclick="confirmDevinKickoff()"><i class="fas fa-rocket"></i> Start Devin Session</button>
+            </footer>
+        </div>
+    </div>
+
     <!-- Context Menu -->
     <div class="custom-context-menu hidden" id="contextMenu">
         <div class="context-menu-item" id="ctxView"><i class="fas fa-eye"></i> View Details</div>
@@ -204,6 +225,7 @@
     <script src="js/tasks.js"></script>
     <script src="js/menus.js"></script>
     <script src="js/events.js"></script>
+    <script src="js/devin.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
