@@ -28,13 +28,35 @@ function createTaskCardDOM(task) {
         : `<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>`;
 
     const isDone = task.column === 'done';
+    const isTodo = task.column === 'todo';
     const editBtn = isDone
         ? `<button class="btn-card-action" onclick="openTaskModal('${task.id}')" title="View Task"><i class="fas fa-expand-alt"></i></button>`
         : `<button class="btn-card-action" onclick="openTaskModal('${task.id}')" title="Edit Task"><i class="fas fa-pencil-alt"></i></button>`;
 
+    let devinPill = '';
+    if (task.devinSessionId) {
+        const working = isDevinWorking(task);
+        const label = devinStatusLabel(task);
+        const labelSlug = label.replace(/\s+/g, '-').toLowerCase();
+        const pillIcon = working ? 'fa-spinner fa-spin' : 'fa-robot';
+        const workingClass = working ? ' devin-working' : '';
+        const clickableClass = task.devinSessionUrl ? ' devin-clickable' : '';
+        const pillTitle = task.devinSessionUrl ? 'Open Devin session' : 'Devin session status';
+        const clickAttr = task.devinSessionUrl ? ` onclick="openDevinSession('${task.id}')"` : '';
+        devinPill = `<span class="devin-status-pill devin-${labelSlug}${workingClass}${clickableClass}" title="${pillTitle}"${clickAttr}><i class="fas ${pillIcon}"></i> ${label}</span>`;
+    }
+
+    let devinButton = '';
+    if (devinEnabled && isTodo && !task.devinSessionId) {
+        devinButton = `<button class="btn-card-action btn-devin" onclick="openDevinModal('${task.id}')" title="Run with Devin"><i class="fas fa-robot"></i></button>`;
+    } else if (task.devinSessionId) {
+        devinButton = `<button class="btn-card-action btn-devin-open" onclick="openDevinSession('${task.id}')" title="Open Devin session"><i class="fas fa-arrow-up-right-from-square"></i></button>`;
+    }
+
     card.innerHTML = `
         <div class="task-header">
             <span class="badge-priority ${task.priority}" onclick="openBadgePriorityMenu(event, '${task.id}')">${task.priority}</span>
+            ${devinPill}
             <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
         </div>
         <h4 class="task-title">${task.title}</h4>
@@ -42,6 +64,7 @@ function createTaskCardDOM(task) {
         <div class="task-footer">
             <div class="card-actions-left">
                 ${editBtn}
+                ${devinButton}
                 <button class="btn-card-action" onclick="deleteTask('${task.id}')" title="Delete task"><i class="fas fa-trash-alt"></i></button>
             </div>
             <div class="card-nav-arrows">${moveButtonsHTML(task)}</div>
