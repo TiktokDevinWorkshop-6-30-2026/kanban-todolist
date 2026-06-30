@@ -34,7 +34,7 @@ function createTaskCardDOM(task) {
 
     card.innerHTML = `
         <div class="task-header">
-            <span class="badge-priority ${task.priority}">${task.priority}</span>
+            <span class="badge-priority ${task.priority}" onclick="openBadgePriorityMenu(event, '${task.id}')">${task.priority}</span>
             <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
         </div>
         <h4 class="task-title">${task.title}</h4>
@@ -47,6 +47,19 @@ function createTaskCardDOM(task) {
             <div class="card-nav-arrows">${moveButtonsHTML(task)}</div>
         </div>
     `;
+
+    if (!isDone) {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', (e) => { card.classList.add('dragging'); e.dataTransfer.setData('text/plain', task.id); });
+        card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    }
+
+    card.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showContextMenu(e.clientX, e.clientY, task.id);
+    });
+
     return card;
 }
 
@@ -103,6 +116,10 @@ function render() {
             checkEmptyState(key, document.getElementById(meta.body));
         }
     });
+
+    document.getElementById('todoTabBadge').textContent = counts.todo;
+    document.getElementById('progressTabBadge').textContent = counts.progress;
+    document.getElementById('doneTabBadge').textContent = counts.done;
 }
 
 function renderTimestampsOnly() {
