@@ -47,6 +47,13 @@ function render() {
     document.getElementById('countProgress').textContent = counts.progress;
     document.getElementById('countDone').textContent = counts.done;
 
+    var todoTabBadge = document.getElementById('todoTabBadge');
+    var progressTabBadge = document.getElementById('progressTabBadge');
+    var doneTabBadge = document.getElementById('doneTabBadge');
+    if (todoTabBadge) todoTabBadge.textContent = counts.todo;
+    if (progressTabBadge) progressTabBadge.textContent = counts.progress;
+    if (doneTabBadge) doneTabBadge.textContent = counts.done;
+
     checkEmptyState('todo', bodyTodo, counts.todo);
     checkEmptyState('progress', bodyProgress, counts.progress);
     checkEmptyState('done', bodyDone, counts.done);
@@ -74,13 +81,30 @@ function createTaskCardDOM(task) {
     card.className = 'task-card priority-' + task.priority;
     card.setAttribute('data-id', task.id);
 
+    if (task.column !== 'done') {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', function(e) {
+            card.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', task.id);
+        });
+        card.addEventListener('dragend', function() {
+            card.classList.remove('dragging');
+        });
+    }
+
+    card.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showContextMenu(e.clientX, e.clientY, task.id);
+    });
+
     var isDone = task.column === 'done';
     var isProgress = task.column === 'progress';
     var isTodo = task.column === 'todo';
 
     var headerHTML =
         '<div class="task-header">' +
-            '<span class="badge-priority ' + task.priority + '">' + task.priority + '</span>' +
+            '<span class="badge-priority ' + task.priority + '" onclick="openBadgePriorityMenu(event, \'' + task.id + '\')">' + task.priority + '</span>' +
             '<span class="task-time">' + formatRelativeTime(task.createdAt) + '</span>' +
         '</div>';
 
