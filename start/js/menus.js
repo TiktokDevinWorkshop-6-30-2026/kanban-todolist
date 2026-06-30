@@ -96,7 +96,19 @@ function showContextMenu(clientX, clientY, taskId) {
         }
     }
 
+    // Devin actions: shown contextually based on config + session state.
+    const ctxRunDevin = document.getElementById('ctxRunDevin');
+    const ctxOpenDevin = document.getElementById('ctxOpenDevin');
+    const ctxDevinDivider = document.getElementById('ctxDevinDivider');
+    const canRunDevin = (typeof devinEnabled !== 'undefined' && devinEnabled) && isTodo && !task.devinSessionId;
+    const canOpenDevin = Boolean(task.devinSessionId && task.devinSessionUrl);
+    ctxRunDevin.style.display = canRunDevin ? 'flex' : 'none';
+    ctxOpenDevin.style.display = canOpenDevin ? 'flex' : 'none';
+    ctxDevinDivider.style.display = (canRunDevin || canOpenDevin) ? 'block' : 'none';
+
     document.getElementById('ctxView').onclick = () => { openViewModal(taskId); hideContextMenu(); };
+    ctxRunDevin.onclick = () => { if (canRunDevin) openDevinModal(taskId); hideContextMenu(); };
+    ctxOpenDevin.onclick = () => { if (canOpenDevin) openDevinSession(taskId); hideContextMenu(); };
     ctxEdit.onclick = () => { if (!isDone) openEditModal(taskId); hideContextMenu(); };
     ctxMoveTodo.onclick = () => { moveTask(taskId, 'todo'); hideContextMenu(); };
     ctxMoveProgress.onclick = () => { moveTask(taskId, 'progress'); hideContextMenu(); };

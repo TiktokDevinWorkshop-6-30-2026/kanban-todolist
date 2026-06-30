@@ -38,8 +38,29 @@ function createTaskCardDOM(task) {
     ).join('');
 
     const isDone = task.column === 'done';
+    const isTodo = task.column === 'todo';
     const editIcon = isDone ? 'fa-expand-alt' : 'fa-pencil-alt';
     const editTitle = isDone ? 'View Task' : 'Edit Task';
+
+    let devinPill = '';
+    if (task.devinSessionId) {
+        const working = isDevinWorking(task);
+        const label = devinStatusLabel(task);
+        const labelSlug = label.replace(/\s+/g, '-').toLowerCase();
+        const pillIcon = working ? 'fa-spinner fa-spin' : 'fa-robot';
+        const workingClass = working ? ' devin-working' : '';
+        const clickableClass = task.devinSessionUrl ? ' devin-clickable' : '';
+        const pillTitle = task.devinSessionUrl ? 'Open Devin session' : 'Devin session status';
+        const clickAttr = task.devinSessionUrl ? ` onclick="openDevinSession('${task.id}')"` : '';
+        devinPill = `<span class="devin-status-pill devin-${labelSlug}${workingClass}${clickableClass}" title="${pillTitle}"${clickAttr}><i class="fas ${pillIcon}"></i> ${label}</span>`;
+    }
+
+    let devinButton = '';
+    if (typeof devinEnabled !== 'undefined' && devinEnabled && isTodo && !task.devinSessionId) {
+        devinButton = `<button class="btn-card-action btn-devin" onclick="openDevinModal('${task.id}')" title="Run with Devin"><i class="fas fa-robot"></i></button>`;
+    } else if (task.devinSessionId) {
+        devinButton = `<button class="btn-card-action btn-devin-open" onclick="openDevinSession('${task.id}')" title="Open Devin session"><i class="fas fa-arrow-up-right-from-square"></i></button>`;
+    }
 
     card.innerHTML = `
         <div class="task-card-header">
@@ -49,10 +70,12 @@ function createTaskCardDOM(task) {
             </div>
             <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
         </div>
+        ${devinPill}
         ${descHtml}
         <div class="task-footer">
             <div class="card-actions-left">
                 <button class="btn-card-action" onclick="openTaskModal('${task.id}')" title="${editTitle}"><i class="fas ${editIcon}"></i></button>
+                ${devinButton}
                 <button class="btn-card-action" onclick="deleteTask('${task.id}')" title="Delete task"><i class="fas fa-trash-alt"></i></button>
             </div>
             <div class="card-nav-arrows">${arrows}</div>

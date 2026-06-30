@@ -5,4 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sortBySelect').value = state.sortBy;
     render();
     setInterval(renderTimestampsOnly, 30000);
+
+    refreshDevinConfig();
+    startDevinPolling();
+    pollDevinSessions();
 });
