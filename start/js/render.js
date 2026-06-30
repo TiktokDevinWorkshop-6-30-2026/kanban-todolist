@@ -8,10 +8,21 @@ function render() {
     }
 
     state.tasks.forEach(task => {
-        const row = document.createElement('div');
-        row.className = 'task-row';
-        row.innerHTML = '<span class="task-title">' + task.title + '</span>' +
-            '<button class="delete-btn" onclick="deleteTask(\'' + task.id + '\')">&times;</button>';
-        taskList.appendChild(row);
+        const card = document.createElement('div');
+        card.className = 'task-card priority-' + (task.priority || 'low');
+
+        const descHtml = task.desc
+            ? '<p class="task-desc-excerpt">' + task.desc + '</p>'
+            : '<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>';
+
+        card.innerHTML =
+            '<div class="task-header">' +
+                '<span class="badge-priority ' + (task.priority || 'low') + '">' + (task.priority || 'low') + '</span>' +
+                '<button class="btn-card-action" onclick="deleteTask(\'' + task.id + '\')" title="Delete task"><i class="fas fa-trash-alt"></i></button>' +
+            '</div>' +
+            '<div class="task-title">' + task.title + '</div>' +
+            descHtml;
+
+        taskList.appendChild(card);
     });
 }
