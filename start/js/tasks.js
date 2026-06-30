@@ -19,7 +19,20 @@ function addNewTodo() {
 }
 
 function deleteTask(taskId) {
-    state.tasks = state.tasks.filter(t => t.id !== taskId);
+    var task = state.tasks.find(function (t) { return t.id === taskId; });
+    if (!task) return;
+
+    var snapshot = JSON.parse(JSON.stringify(task));
+    var index = state.tasks.indexOf(task);
+
+    state.tasks.splice(index, 1);
     saveToStorage();
     render();
+
+    showToast('Task deleted', 'success', function () {
+        state.tasks.splice(index, 0, snapshot);
+        saveToStorage();
+        render();
+        showToast('Task restored', 'info');
+    });
 }
