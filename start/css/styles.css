@@ -1,0 +1,109 @@
+:root {
+    --primary: #00f2ea;
+    --primary-hover: #00cbc4;
+    --primary-contrast: #00332f;
+    --accent: #ff0050;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+body {
+    background: #f8fafc;
+    color: #0f172a;
+    min-height: 100vh;
+    padding: 40px 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 560px;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.logo .todo-text { color: #000000; }
+.logo .list-text { color: #00d6cf; }
+.logo .accent-text { color: var(--accent); }
+
+.add-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+#todoTitleInput {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#todoTitleInput:focus {
+    border-color: var(--primary);
+}
+
+#addTodoBtn {
+    background: var(--primary);
+    color: var(--primary-contrast);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#addTodoBtn:hover {
+    background: var(--primary-hover);
+}
+
+.task-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.task-row .task-title {
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.task-row .delete-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+}
+
+.task-row .delete-btn:hover {
+    color: var(--accent);
+    background: #fff1f2;
+}
+
+.empty-message {
+    text-align: center;
+    color: #94a3b8;
+    padding: 32px 0;
+    font-size: 0.9rem;
+}
