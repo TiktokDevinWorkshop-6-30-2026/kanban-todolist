@@ -28,4 +28,20 @@ function setupEventListeners() {
             }
         }
     });
+
+    // Modal events
+    document.getElementById('saveEditBtn').addEventListener('click', saveEditedTask);
+
+    document.getElementById('taskTitleInput').addEventListener('input', (e) => {
+        document.getElementById('taskTitleCounter').textContent = (40 - e.target.value.length) + ' left';
+    });
+
+    document.getElementById('taskDescInput').addEventListener('input', (e) => {
+        document.getElementById('taskDescCounter').textContent = (150 - e.target.value.length) + ' left';
+    });
+
+    // Search, filter, sort
+    document.getElementById('searchInput').addEventListener('input', (e) => { state.searchQuery = e.target.value.trim(); render(); });
+    document.getElementById('priorityFilter').addEventListener('change', (e) => { state.filterPriority = e.target.value; render(); });
+    document.getElementById('sortBySelect').addEventListener('change', (e) => { state.sortBy = e.target.value; render(); });
 }

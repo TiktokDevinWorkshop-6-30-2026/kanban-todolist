@@ -1,3 +1,5 @@
+let editingTaskId = null;
+
 function addNewTodo() {
     const input = document.getElementById('todoTitleInput');
     const title = input.value.trim();
@@ -22,7 +24,7 @@ function addNewTodo() {
         desc: desc,
         priority: priorityInput.value,
         column: 'todo',
-        createdAt: new Date().toISOString(),
+        createdAt: Date.now(),
         editedAt: null,
         completed: false
     };
@@ -40,7 +42,11 @@ function addNewTodo() {
     render();
 }
 
-function deleteTask(taskId) {
+async function deleteTask(taskId) {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const confirmed = await requestConfirmation('Delete Task', 'Are you sure you want to permanently delete "' + task.title + '"?');
+    if (!confirmed) return;
     state.tasks = state.tasks.filter(t => t.id !== taskId);
     saveToStorage();
     render();
@@ -61,5 +67,72 @@ function moveTask(taskId, targetColumn) {
     if ((oldColumn === 'done' || oldColumn === 'progress') && (targetColumn === 'todo' || targetColumn === 'progress')) task.completed = false;
     task.column = targetColumn;
     saveToStorage();
+    render();
+}
+
+function openTaskModal(taskId) {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    editingTaskId = taskId;
+
+    const titleInput = document.getElementById('taskTitleInput');
+    const priorityInput = document.getElementById('taskPriorityInput');
+    const descInput = document.getElementById('taskDescInput');
+    const saveBtn = document.getElementById('saveEditBtn');
+    const modalTitle = document.getElementById('taskModalTitle');
+
+    titleInput.value = task.title;
+    priorityInput.value = task.priority;
+    descInput.value = task.desc || '';
+
+    document.getElementById('taskTitleCounter').textContent = (40 - task.title.length) + ' left';
+    document.getElementById('taskDescCounter').textContent = (150 - (task.desc || '').length) + ' left';
+
+    document.getElementById('taskCreated').textContent = formatFullTime(task.createdAt);
+    document.getElementById('taskEdited').textContent = task.editedAt ? formatFullTime(task.editedAt) : 'Not edited yet';
+
+    if (task.column === 'done') {
+        titleInput.disabled = true;
+        priorityInput.disabled = true;
+        descInput.disabled = true;
+        saveBtn.style.display = 'none';
+        modalTitle.textContent = 'Task Details';
+    } else {
+        titleInput.disabled = false;
+        priorityInput.disabled = false;
+        descInput.disabled = false;
+        saveBtn.style.display = '';
+        modalTitle.textContent = 'Edit Task';
+    }
+
+    openModal('taskModal');
+}
+
+const openViewModal = openTaskModal;
+const openEditModal = openTaskModal;
+
+function saveEditedTask() {
+    if (!editingTaskId) return;
+    const task = state.tasks.find(t => t.id === editingTaskId);
+    if (!task) return;
+
+    const title = document.getElementById('taskTitleInput').value.trim();
+    if (title.length < 3 || title.length > 40) {
+        alert('Title must be between 3 and 40 characters.');
+        return;
+    }
+    const desc = document.getElementById('taskDescInput').value.trim();
+    if (desc.length > 150) {
+        alert('Description must be 150 characters or fewer.');
+        return;
+    }
+
+    task.title = title;
+    task.desc = desc;
+    task.priority = document.getElementById('taskPriorityInput').value;
+    task.editedAt = Date.now();
+
+    saveToStorage();
+    closeModal('taskModal');
     render();
 }
