@@ -14,7 +14,24 @@
     <div class="app-card" id="appCard">
         <header class="app-header">
             <div class="logo"><span class="todo-text">Daily</span> <span class="list-text">Task</span> <span class="accent-text">Tracker</span></div>
-            <div class="header-controls"><!-- search/filter/sort land here in phase 4 --></div>
+            <div class="header-controls">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search tasks...">
+                </div>
+                <select id="priorityFilter" class="select-filter">
+                    <option value="all" selected>All Priorities</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <select id="sortBySelect" class="select-filter">
+                    <option value="date-desc" selected>Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="priority-desc">Highest Priority</option>
+                    <option value="title-asc">Title A-Z</option>
+                </select>
+            </div>
         </header>
 
         <section class="add-todo-wrapper">
@@ -66,6 +83,63 @@
         </main>
     </div>
 
+    <!-- Task Edit/View Modal -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2 id="taskModalTitle">Edit Task</h2>
+                <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label class="modal-label" for="taskTitleInput">Title</label>
+                <input type="text" id="taskTitleInput" class="modal-input" maxlength="40">
+                <div class="modal-char-counter" id="taskTitleCounter">40 left</div>
+
+                <label class="modal-label" for="taskPriorityInput">Priority</label>
+                <select id="taskPriorityInput" class="modal-select">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+
+                <label class="modal-label" for="taskDescInput">Description</label>
+                <textarea id="taskDescInput" class="modal-textarea" maxlength="150" rows="3"></textarea>
+                <div class="modal-char-counter" id="taskDescCounter">150 left</div>
+
+                <div class="modal-timestamps">
+                    <div class="timestamp-row"><i class="fas fa-clock"></i> Created: <span id="taskCreated"></span></div>
+                    <div class="timestamp-row"><i class="fas fa-pencil-alt"></i> Last edited: <span id="taskEdited"></span></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-delete" onclick="if(editingTaskId) deleteTask(editingTaskId).then(function(){closeModal('taskModal');})"><i class="fas fa-trash-alt"></i> Delete</button>
+                <div class="modal-footer-right">
+                    <button class="btn-modal-cancel" onclick="closeModal('taskModal')">Cancel</button>
+                    <button class="btn-modal-save" id="saveEditBtn"><i class="fas fa-check"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-header">
+                <h2 id="confirmModalTitle">Confirm</h2>
+                <button class="modal-close" id="confirmCloseBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" id="confirmCancelBtn">Cancel</button>
+                <button class="btn-modal-delete" id="confirmYesBtn"><i class="fas fa-trash-alt"></i> Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/modals.js"></script>
     <script src="js/state.js"></script>
     <script src="js/render.js"></script>
     <script src="js/tasks.js"></script>

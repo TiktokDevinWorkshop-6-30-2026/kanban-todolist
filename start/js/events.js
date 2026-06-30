@@ -28,4 +28,33 @@ function setupEventListeners() {
             }
         }
     });
+
+    document.getElementById('saveEditBtn').addEventListener('click', saveEditedTask);
+
+    var taskTitleInput = document.getElementById('taskTitleInput');
+    var taskTitleCounter = document.getElementById('taskTitleCounter');
+    taskTitleInput.addEventListener('input', function() {
+        taskTitleCounter.textContent = (40 - taskTitleInput.value.length) + ' left';
+    });
+
+    var taskDescInput = document.getElementById('taskDescInput');
+    var taskDescCounter = document.getElementById('taskDescCounter');
+    taskDescInput.addEventListener('input', function() {
+        taskDescCounter.textContent = (150 - taskDescInput.value.length) + ' left';
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        state.searchQuery = e.target.value.trim();
+        render();
+    });
+
+    document.getElementById('priorityFilter').addEventListener('change', function(e) {
+        state.filterPriority = e.target.value;
+        render();
+    });
+
+    document.getElementById('sortBySelect').addEventListener('change', function(e) {
+        state.sortBy = e.target.value;
+        render();
+    });
 }

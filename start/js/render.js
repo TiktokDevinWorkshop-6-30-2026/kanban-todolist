@@ -7,9 +7,35 @@ function render() {
     bodyProgress.innerHTML = '';
     bodyDone.innerHTML = '';
 
+    var filteredTasks = state.tasks.slice();
+
+    if (state.searchQuery) {
+        var q = state.searchQuery.toLowerCase();
+        filteredTasks = filteredTasks.filter(function(t) {
+            return t.title.toLowerCase().includes(q) || (t.desc || '').toLowerCase().includes(q);
+        });
+    }
+
+    if (state.filterPriority !== 'all') {
+        filteredTasks = filteredTasks.filter(function(t) {
+            return t.priority === state.filterPriority;
+        });
+    }
+
+    filteredTasks.sort(function(a, b) {
+        if (state.sortBy === 'date-desc') return b.createdAt - a.createdAt;
+        if (state.sortBy === 'date-asc') return a.createdAt - b.createdAt;
+        if (state.sortBy === 'priority-desc') {
+            var w = { high: 3, medium: 2, low: 1 };
+            return w[b.priority] - w[a.priority];
+        }
+        if (state.sortBy === 'title-asc') return a.title.localeCompare(b.title);
+        return 0;
+    });
+
     var counts = { todo: 0, progress: 0, done: 0 };
 
-    state.tasks.forEach(function(task) {
+    filteredTasks.forEach(function(task) {
         counts[task.column]++;
         var card = createTaskCardDOM(task);
         if (task.column === 'todo') bodyTodo.appendChild(card);
@@ -36,6 +62,13 @@ function checkEmptyState(columnName, element, count) {
     }
 }
 
+function renderTimestampsOnly() {
+    state.tasks.forEach(function(task) {
+        var badge = document.querySelector('.task-card[data-id="' + task.id + '"] .task-time');
+        if (badge) badge.textContent = formatRelativeTime(task.createdAt);
+    });
+}
+
 function createTaskCardDOM(task) {
     var card = document.createElement('article');
     card.className = 'task-card priority-' + task.priority;
@@ -48,6 +81,7 @@ function createTaskCardDOM(task) {
     var headerHTML =
         '<div class="task-header">' +
             '<span class="badge-priority ' + task.priority + '">' + task.priority + '</span>' +
+            '<span class="task-time">' + formatRelativeTime(task.createdAt) + '</span>' +
         '</div>';
 
     var descHTML = task.desc
@@ -65,9 +99,11 @@ function createTaskCardDOM(task) {
         navArrowsHTML = '<button class="btn-arrow" onclick="moveTask(\'' + task.id + '\', \'progress\')" title="Move back to In Progress"><i class="fas fa-arrow-left"></i></button>';
     }
 
+    var editButton = '<button class="btn-card-action" onclick="openTaskModal(\'' + task.id + '\')" title="' + (isDone ? 'View Task' : 'Edit Task') + '"><i class="fas ' + (isDone ? 'fa-expand-alt' : 'fa-pencil-alt') + '"></i></button>';
+
     var footerHTML =
         '<div class="task-footer">' +
-            '<div class="card-actions-left"></div>' +
+            '<div class="card-actions-left">' + editButton + '</div>' +
             '<div class="card-nav-arrows">' + navArrowsHTML + '</div>' +
         '</div>';
 
