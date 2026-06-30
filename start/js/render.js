@@ -11,20 +11,22 @@ function render() {
     }
 
     state.tasks.forEach((task) => {
-        const row = document.createElement('div');
-        row.className = 'task-row';
+        const card = document.createElement('div');
+        card.className = `task-card priority-${task.priority}`;
 
-        const title = document.createElement('span');
-        title.className = 'task-title';
-        title.textContent = task.title;
+        const descMarkup = task.desc
+            ? `<p class="task-desc-excerpt">${task.desc}</p>`
+            : `<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>`;
 
-        const delBtn = document.createElement('button');
-        delBtn.className = 'delete-btn';
-        delBtn.textContent = 'Delete';
-        delBtn.setAttribute('onclick', `deleteTask('${task.id}')`);
+        card.innerHTML = `
+            <div class="task-header">
+                <span class="badge-priority ${task.priority}">${task.priority}</span>
+                <button class="btn-card-action" title="Delete" onclick="deleteTask('${task.id}')"><i class="fas fa-trash-alt"></i></button>
+            </div>
+            <div class="task-title">${task.title}</div>
+            ${descMarkup}
+        `;
 
-        row.appendChild(title);
-        row.appendChild(delBtn);
-        list.appendChild(row);
+        list.appendChild(card);
     });
 }
