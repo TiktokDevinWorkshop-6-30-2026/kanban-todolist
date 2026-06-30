@@ -11,20 +11,42 @@ function render() {
     }
 
     state.tasks.forEach(task => {
-        const row = document.createElement('div');
-        row.className = 'task-row';
+        const card = document.createElement('div');
+        card.className = 'task-card priority-' + task.priority;
 
-        const title = document.createElement('span');
+        const header = document.createElement('div');
+        header.className = 'task-header';
+
+        const badge = document.createElement('span');
+        badge.className = 'badge-priority ' + task.priority;
+        badge.textContent = task.priority;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-card-action';
+        deleteBtn.title = 'Delete task';
+        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+        deleteBtn.onclick = () => deleteTask(task.id);
+
+        header.appendChild(badge);
+        header.appendChild(deleteBtn);
+
+        const title = document.createElement('p');
         title.className = 'task-title';
         title.textContent = task.title;
 
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.textContent = 'Delete';
-        deleteBtn.onclick = () => deleteTask(task.id);
+        const desc = document.createElement('p');
+        desc.className = 'task-desc-excerpt';
+        if (task.desc) {
+            desc.textContent = task.desc;
+        } else {
+            desc.textContent = 'No description provided.';
+            desc.style.color = 'var(--text-muted)';
+            desc.style.fontStyle = 'italic';
+        }
 
-        row.appendChild(title);
-        row.appendChild(deleteBtn);
-        list.appendChild(row);
+        card.appendChild(header);
+        card.appendChild(title);
+        card.appendChild(desc);
+        list.appendChild(card);
     });
 }
