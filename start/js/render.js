@@ -17,15 +17,27 @@ function createTaskCardDOM(task) {
         arrowsHtml = '<button class="btn-arrow" onclick="moveTask(\'' + task.id + '\', \'progress\')" title="Move to In Progress"><i class="fas fa-arrow-left"></i></button>';
     }
 
+    var editIcon, editTitle;
+    if (task.column === 'done') {
+        editIcon = 'fa-expand-alt';
+        editTitle = 'View Task';
+    } else {
+        editIcon = 'fa-pencil-alt';
+        editTitle = 'Edit Task';
+    }
+
     card.innerHTML =
         '<div class="task-header">' +
             '<span class="badge-priority ' + task.priority + '">' + task.priority + '</span>' +
-            '<button class="btn-card-action" onclick="deleteTask(\'' + task.id + '\')" title="Delete task"><i class="fas fa-trash-alt"></i></button>' +
+            '<span class="task-time">' + formatRelativeTime(task.createdAt) + '</span>' +
         '</div>' +
         '<h4 class="task-title">' + task.title + '</h4>' +
         descHtml +
         '<div class="task-footer">' +
-            '<div class="card-actions-left"></div>' +
+            '<div class="card-actions-left">' +
+                '<button class="btn-card-action" onclick="openTaskModal(\'' + task.id + '\')" title="' + editTitle + '"><i class="fas ' + editIcon + '"></i></button>' +
+                '<button class="btn-card-action" onclick="deleteTask(\'' + task.id + '\')" title="Delete task"><i class="fas fa-trash-alt"></i></button>' +
+            '</div>' +
             '<div class="card-nav-arrows">' + arrowsHtml + '</div>' +
         '</div>';
 
@@ -62,9 +74,35 @@ function render() {
     bodyProgress.innerHTML = '';
     bodyDone.innerHTML = '';
 
+    var filteredTasks = state.tasks.slice();
+
+    if (state.searchQuery) {
+        var q = state.searchQuery.toLowerCase();
+        filteredTasks = filteredTasks.filter(function(t) {
+            return t.title.toLowerCase().indexOf(q) !== -1 || (t.desc || '').toLowerCase().indexOf(q) !== -1;
+        });
+    }
+
+    if (state.filterPriority !== 'all') {
+        filteredTasks = filteredTasks.filter(function(t) {
+            return t.priority === state.filterPriority;
+        });
+    }
+
+    filteredTasks.sort(function(a, b) {
+        if (state.sortBy === 'date-desc') return b.createdAt - a.createdAt;
+        if (state.sortBy === 'date-asc') return a.createdAt - b.createdAt;
+        if (state.sortBy === 'priority-desc') {
+            var w = { high: 3, medium: 2, low: 1 };
+            return w[b.priority] - w[a.priority];
+        }
+        if (state.sortBy === 'title-asc') return a.title.localeCompare(b.title);
+        return 0;
+    });
+
     var counts = { todo: 0, progress: 0, done: 0 };
 
-    state.tasks.forEach(function(task) {
+    filteredTasks.forEach(function(task) {
         var card = createTaskCardDOM(task);
         if (task.column === 'todo') {
             bodyTodo.appendChild(card);
@@ -85,4 +123,16 @@ function render() {
     checkEmptyState(bodyTodo, 'todo');
     checkEmptyState(bodyProgress, 'progress');
     checkEmptyState(bodyDone, 'done');
+}
+
+function renderTimestampsOnly() {
+    var cards = document.querySelectorAll('.task-card');
+    cards.forEach(function(card) {
+        var taskId = card.getAttribute('data-id');
+        var task = state.tasks.find(function(t) { return t.id === taskId; });
+        if (task) {
+            var timeEl = card.querySelector('.task-time');
+            if (timeEl) timeEl.textContent = formatRelativeTime(task.createdAt);
+        }
+    });
 }
