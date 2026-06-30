@@ -4,6 +4,7 @@ function showContextMenu(x, y, taskId) {
     if (!task) return;
     const menu = document.getElementById('contextMenu');
     const isDone = task.column === 'done';
+    const isTodo = task.column === 'todo';
 
     const view = document.getElementById('ctxView');
     const edit = document.getElementById('ctxEdit');
@@ -12,10 +13,20 @@ function showContextMenu(x, y, taskId) {
     const moveDone = document.getElementById('ctxMoveDone');
     const del = document.getElementById('ctxDelete');
 
+    const ctxDevinDivider = document.getElementById('ctxDevinDivider');
+    const ctxRunDevin = document.getElementById('ctxRunDevin');
+    const ctxOpenDevin = document.getElementById('ctxOpenDevin');
+
     edit.classList.toggle('disabled', isDone);
     moveTodo.classList.toggle('disabled', task.column === 'todo');
     moveProgress.classList.toggle('disabled', task.column === 'progress');
     moveDone.classList.toggle('disabled', task.column === 'done' || task.column === 'todo');
+
+    const showRunDevin = devinEnabled && isTodo && !task.devinSessionId;
+    const showOpenDevin = Boolean(task.devinSessionUrl);
+    ctxRunDevin.classList.toggle('hidden', !showRunDevin);
+    ctxOpenDevin.classList.toggle('hidden', !showOpenDevin);
+    ctxDevinDivider.classList.toggle('hidden', !showRunDevin && !showOpenDevin);
 
     view.onclick = () => { openViewModal(taskId); hideContextMenu(); };
     edit.onclick = () => { if (!isDone) openEditModal(taskId); hideContextMenu(); };
@@ -23,6 +34,8 @@ function showContextMenu(x, y, taskId) {
     moveProgress.onclick = () => { moveTask(taskId, 'progress'); hideContextMenu(); };
     moveDone.onclick = () => { moveTask(taskId, 'done'); hideContextMenu(); };
     del.onclick = () => { deleteTask(taskId); hideContextMenu(); };
+    ctxRunDevin.onclick = () => { openDevinModal(taskId); hideContextMenu(); };
+    ctxOpenDevin.onclick = () => { openDevinSession(taskId); hideContextMenu(); };
 
     menu.classList.remove('hidden');
     const rect = menu.getBoundingClientRect();
