@@ -1,0 +1,342 @@
+/* ==========================================================================
+   1. CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+   ========================================================================== */
+:root {
+    /* Surfaces */
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --border-focus: #00f2ea;
+    /* Typography (slate scale) */
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    /* Brand: aqua base. The pink accent is used ONLY in the app-title's last word. */
+    --primary: #00f2ea;
+    --primary-hover: #00cbc4;
+    --primary-light: #e0fffe;
+    --primary-contrast: #00332f; /* dark text for use on the light aqua primary */
+    --accent: #ff0050;
+    --accent-hover: #cc0040;
+    /* Priority colors */
+    --priority-low-bg: #f0fdf4;   --priority-low-text: #16a34a;   --priority-low-border: #10b981;
+    --priority-medium-bg: #fffbeb; --priority-medium-text: #d97706; --priority-medium-border: #f59e0b;
+    --priority-high-bg: #fef2f2;  --priority-high-text: #dc2626;  --priority-high-border: #f43f5e;
+    /* Elevation */
+    --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.05);
+    /* Motion */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   2. GLOBAL RESET
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 16px 12px 16px;
+    overflow: hidden;
+}
+
+.hidden { display: none !important; }
+
+/* ==========================================================================
+   3. MASTER APPLICATION CONTAINER
+   ========================================================================== */
+.app-card {
+    width: 100%;
+    max-width: 1080px;
+    flex: 1;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ==========================================================================
+   4. APPLICATION HEADER
+   ========================================================================== */
+.app-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    user-select: none;
+}
+.logo .todo-text   { color: #000000; margin-right: 2px; }
+.logo .list-text   { color: #00d6cf; margin-left: 1px; }
+.logo .accent-text { color: var(--accent); margin-left: 1px; }
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.select-filter {
+    padding: 7px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    outline: none;
+    background-color: #fff;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.select-filter:focus { border-color: var(--border-focus); }
+
+/* ==========================================================================
+   5. INLINE TASK CREATION
+   ========================================================================== */
+.add-todo-wrapper {
+    padding: 16px 24px 12px 24px;
+    background-color: #f8fafc;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.add-todo-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-smooth);
+    overflow: hidden;
+}
+.add-todo-card:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 4px rgba(0, 242, 234, 0.25);
+}
+
+.add-todo-main-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 12px;
+}
+
+.title-input-field {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    background: transparent;
+}
+.title-input-field::placeholder { color: var(--text-muted); }
+
+.row-right-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.char-counter {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.priority-select-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.priority-select-wrapper label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.btn-add-submit {
+    background-color: var(--primary);
+    color: var(--primary-contrast);
+    border: none;
+    outline: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition-smooth);
+}
+.btn-add-submit:hover { background-color: var(--primary-hover); }
+
+/* Collapsible description row */
+.add-todo-desc-row {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    border-top: 0 solid var(--border-color);
+    background-color: #fafafa;
+}
+.add-todo-card.expanded .add-todo-desc-row {
+    max-height: 80px;
+    opacity: 1;
+    border-top: 1px solid var(--border-color);
+}
+.desc-textarea-field {
+    width: 100%;
+    height: 55px;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    background: transparent;
+    color: var(--text-secondary);
+}
+.desc-textarea-field::placeholder { color: var(--text-muted); }
+.desc-char-counter {
+    padding: 0 12px 6px 12px;
+    text-align: right;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   6. TASK LIST
+   ========================================================================== */
+.task-list-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    background-color: #ffffff;
+}
+
+#taskList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px 0;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   7. TASK CARD COMPONENT
+   ========================================================================== */
+.task-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-smooth);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.task-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: #cbd5e1;
+}
+.task-card.priority-low    { border-left: 4px solid var(--priority-low-border); }
+.task-card.priority-medium { border-left: 4px solid var(--priority-medium-border); }
+.task-card.priority-high   { border-left: 4px solid var(--priority-high-border); }
+
+.task-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.badge-priority {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    user-select: none;
+    transition: var(--transition-smooth);
+}
+.badge-priority:hover { filter: brightness(0.95); }
+.badge-priority.low    { background-color: var(--priority-low-bg);    color: var(--priority-low-text); }
+.badge-priority.medium { background-color: var(--priority-medium-bg); color: var(--priority-medium-text); }
+.badge-priority.high   { background-color: var(--priority-high-bg);   color: var(--priority-high-text); }
+
+.btn-card-action {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    transition: var(--transition-smooth);
+}
+.btn-card-action:hover {
+    background-color: #fef2f2;
+    color: var(--accent);
+}
+
+.task-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.35;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.task-desc-excerpt {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    word-break: break-word;
+}
