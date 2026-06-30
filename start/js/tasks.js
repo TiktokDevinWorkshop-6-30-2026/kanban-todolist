@@ -19,7 +19,19 @@ function addNewTodo() {
 }
 
 function deleteTask(taskId) {
-    state.tasks = state.tasks.filter(t => t.id !== taskId);
+    var taskIndex = state.tasks.findIndex(function (t) { return t.id === taskId; });
+    if (taskIndex === -1) return;
+
+    var removed = state.tasks.splice(taskIndex, 1)[0];
     saveToStorage();
     render();
+
+    showToast('Task deleted', {
+        label: 'Undo',
+        onClick: function () {
+            state.tasks.splice(taskIndex, 0, removed);
+            saveToStorage();
+            render();
+        }
+    });
 }
