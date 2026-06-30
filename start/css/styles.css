@@ -914,3 +914,61 @@ body {
     .board-column { display: none; }
     .board-column.active-tab { display: flex; }
 }
+
+/* ==========================================================================
+   14. DEVIN INTEGRATION — kickoff modal, card button, status pill
+   ========================================================================== */
+#devinPromptInput {
+    resize: vertical;
+    min-height: 80px;
+}
+.btn-card-action.btn-devin { color: var(--primary-contrast); }
+.btn-card-action.btn-devin:hover { background-color: var(--primary-light); }
+.btn-card-action.btn-devin-open { color: var(--primary-contrast); }
+.btn-card-action.btn-devin-open:hover { background-color: var(--primary-light); }
+
+.devin-status-pill {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    padding: 2px 7px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: var(--primary-light);
+    color: var(--primary-contrast);
+    white-space: nowrap;
+}
+.devin-status-pill i { font-size: 0.6rem; }
+.devin-status-pill.devin-finished,
+.devin-status-pill.devin-complete {
+    background-color: #ecfdf5;
+    color: #047857;
+}
+.devin-status-pill.devin-error,
+.devin-status-pill.devin-suspended {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+.devin-status-pill.devin-waiting,
+.devin-status-pill.devin-blocked {
+    background-color: #fffbeb;
+    color: #b45309;
+}
+.devin-status-pill.devin-clickable {
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.devin-status-pill.devin-clickable:hover {
+    filter: brightness(0.96);
+    box-shadow: 0 0 0 2px rgba(0, 242, 234, 0.3);
+}
+.devin-status-pill.devin-working {
+    animation: devin-pulse 1.4s ease-in-out infinite;
+}
+@keyframes devin-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}

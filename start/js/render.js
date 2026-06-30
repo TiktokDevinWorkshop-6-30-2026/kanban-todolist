@@ -66,7 +66,26 @@ function createTaskCardDOM(task) {
         ? `<span class="task-time"><i class="fas fa-check-circle"></i> Completed ${formatTimestamp(task.completedAt)}</span>`
         : `<span class="task-time">${formatRelativeTime(task.createdAt)}</span>`;
 
+    let devinPill = '';
+    if (task.devinSessionId) {
+        const working = isDevinWorking(task);
+        const label = devinStatusLabel(task);
+        const labelSlug = label.replace(/\s+/g, '-').toLowerCase();
+        const pillIcon = working ? 'fa-spinner fa-spin' : 'fa-robot';
+        const workingClass = working ? ' devin-working' : '';
+        const clickableClass = task.devinSessionUrl ? ' devin-clickable' : '';
+        const pillTitle = task.devinSessionUrl ? 'Open Devin session' : 'Devin session status';
+        const clickAttr = task.devinSessionUrl ? ` onclick="openDevinSession('${task.id}')"` : '';
+        devinPill = `<span class="devin-status-pill devin-${labelSlug}${workingClass}${clickableClass}" title="${pillTitle}"${clickAttr}><i class="fas ${pillIcon}"></i> ${label}</span>`;
+    }
+
     const isDone = task.column === 'done';
+    let devinButton = '';
+    if (typeof devinEnabled !== 'undefined' && devinEnabled && task.column === 'todo' && !task.devinSessionId) {
+        devinButton = `<button class="btn-card-action btn-devin" onclick="openDevinModal('${task.id}')" title="Run with Devin"><i class="fas fa-robot"></i></button>`;
+    } else if (task.devinSessionId) {
+        devinButton = `<button class="btn-card-action btn-devin-open" onclick="openDevinSession('${task.id}')" title="Open Devin session"><i class="fas fa-arrow-up-right-from-square"></i></button>`;
+    }
     const editBtn = isDone
         ? `<button class="btn-card-action" title="View Task" onclick="openTaskModal('${task.id}')"><i class="fas fa-expand-alt"></i></button>`
         : `<button class="btn-card-action" title="Edit Task" onclick="openTaskModal('${task.id}')"><i class="fas fa-pencil-alt"></i></button>`;
@@ -74,6 +93,7 @@ function createTaskCardDOM(task) {
     card.innerHTML = `
         <div class="task-header">
             <span class="badge-priority ${task.priority}" onclick="openBadgePriorityMenu(event, '${task.id}')">${task.priority}</span>
+            ${devinPill}
             <button class="btn-card-action" title="Delete" onclick="deleteTask('${task.id}')"><i class="fas fa-trash-alt"></i></button>
         </div>
         <h4 class="task-title">${task.title}</h4>
@@ -81,6 +101,7 @@ function createTaskCardDOM(task) {
         <div class="task-footer">
             <div class="card-actions-left">
                 ${editBtn}
+                ${devinButton}
                 ${completedMarkup}
             </div>
             <div class="card-nav-arrows">${moveButtons}</div>

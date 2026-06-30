@@ -23,6 +23,17 @@ function showContextMenu(x, y, taskId) {
     setItem('ctxMoveDone', isDone || task.column === 'todo', () => moveTask(taskId, 'done'));
     setItem('ctxDelete', false, () => deleteTask(taskId));
 
+    // Devin actions: shown contextually based on session state + config.
+    const canRunDevin = (typeof devinEnabled !== 'undefined' && devinEnabled) && task.column === 'todo' && !task.devinSessionId;
+    const canOpenDevin = Boolean(task.devinSessionId && task.devinSessionUrl);
+    const ctxRunDevin = document.getElementById('ctxRunDevin');
+    const ctxOpenDevin = document.getElementById('ctxOpenDevin');
+    document.getElementById('ctxDevinDivider').style.display = (canRunDevin || canOpenDevin) ? 'block' : 'none';
+    ctxRunDevin.style.display = canRunDevin ? 'flex' : 'none';
+    ctxOpenDevin.style.display = canOpenDevin ? 'flex' : 'none';
+    ctxRunDevin.onclick = canRunDevin ? () => { openDevinModal(taskId); hideContextMenu(); } : null;
+    ctxOpenDevin.onclick = canOpenDevin ? () => { openDevinSession(taskId); hideContextMenu(); } : null;
+
     menu.classList.remove('hidden');
     const rect = menu.getBoundingClientRect();
     const clampedX = Math.min(x, window.innerWidth - rect.width - 8);
