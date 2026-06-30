@@ -24,6 +24,18 @@ function showContextMenu(x, y, taskId) {
     moveDone.onclick = () => { moveTask(taskId, 'done'); hideContextMenu(); };
     del.onclick = () => { deleteTask(taskId); hideContextMenu(); };
 
+    // Devin integration items (only meaningful when the server is configured)
+    const runDevin = document.getElementById('ctxRunDevin');
+    const openDevin = document.getElementById('ctxOpenDevin');
+    const devinDivider = document.getElementById('ctxDevinDivider');
+    const canRun = (typeof devinEnabled !== 'undefined' && devinEnabled) && task.column === 'todo' && !task.devinSessionId;
+    const canOpen = Boolean(task.devinSessionUrl);
+    runDevin.classList.toggle('hidden', !canRun);
+    openDevin.classList.toggle('hidden', !canOpen);
+    devinDivider.classList.toggle('hidden', !canRun && !canOpen);
+    runDevin.onclick = () => { openDevinModal(taskId); hideContextMenu(); };
+    openDevin.onclick = () => { openDevinSession(taskId); hideContextMenu(); };
+
     menu.classList.remove('hidden');
     const rect = menu.getBoundingClientRect();
     const px = Math.min(x, window.innerWidth - rect.width - 8);
