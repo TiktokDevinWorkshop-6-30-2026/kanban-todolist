@@ -1,5 +1,5 @@
 function render() {
-    const taskList = document.getElementById('taskList');
+    var taskList = document.getElementById('taskList');
     taskList.innerHTML = '';
 
     if (state.tasks.length === 0) {
@@ -7,11 +7,22 @@ function render() {
         return;
     }
 
-    state.tasks.forEach(task => {
-        const row = document.createElement('div');
-        row.className = 'task-row';
-        row.innerHTML = '<span class="task-title">' + task.title + '</span>' +
-            '<button class="delete-btn" onclick="deleteTask(\'' + task.id + '\')">Delete</button>';
-        taskList.appendChild(row);
+    state.tasks.forEach(function(task) {
+        var card = document.createElement('div');
+        card.className = 'task-card priority-' + task.priority;
+
+        var descHtml = task.desc
+            ? '<p class="task-desc-excerpt">' + task.desc + '</p>'
+            : '<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>';
+
+        card.innerHTML =
+            '<div class="task-header">' +
+                '<span class="badge-priority ' + task.priority + '">' + task.priority + '</span>' +
+                '<button class="btn-card-action" onclick="deleteTask(\'' + task.id + '\')" title="Delete task"><i class="fas fa-trash-alt"></i></button>' +
+            '</div>' +
+            '<div class="task-title">' + task.title + '</div>' +
+            descHtml;
+
+        taskList.appendChild(card);
     });
 }
