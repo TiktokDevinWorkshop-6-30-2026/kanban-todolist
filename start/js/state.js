@@ -30,3 +30,38 @@ function loadDemoData() {
     state.tasks = createDemoTasks();
     saveToStorage();
 }
+
+/* ── Metric history ──────────────────────────────────────────────────── */
+const METRICS_STORAGE_KEY = 'daily-task-tracker-metrics';
+
+function loadMetricHistory() {
+    try {
+        const saved = localStorage.getItem(METRICS_STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+    } catch (e) { return []; }
+}
+
+function saveMetricHistory(history) {
+    localStorage.setItem(METRICS_STORAGE_KEY, JSON.stringify(history));
+}
+
+function recordMetricSnapshot() {
+    const history = loadMetricHistory();
+    const now = Date.now();
+    const counts = { todo: 0, progress: 0, done: 0 };
+    state.tasks.forEach(t => { if (counts[t.column] !== undefined) counts[t.column]++; });
+
+    /* Deduplicate: skip if the last snapshot has identical counts and is < 5 s old */
+    const last = history[history.length - 1];
+    if (last && (now - last.ts < 5000) &&
+        last.todo === counts.todo && last.progress === counts.progress && last.done === counts.done) {
+        return;
+    }
+
+    history.push({ ts: now, todo: counts.todo, progress: counts.progress, done: counts.done });
+
+    /* Keep at most 200 data-points so localStorage doesn't bloat */
+    if (history.length > 200) history.splice(0, history.length - 200);
+
+    saveMetricHistory(history);
+}
