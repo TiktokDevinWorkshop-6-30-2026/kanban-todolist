@@ -13,7 +13,7 @@
 
             toast.innerHTML = `
                 <i class="fas ${icon}"></i>
-                <span class="toast-message">${message}</span>
+                <span class="toast-message">${escapeHTML(message)}</span>
             `;
             container.appendChild(toast);
 
