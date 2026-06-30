@@ -256,6 +256,10 @@ body {
     overflow: hidden;
     transition: var(--transition-smooth);
 }
+.board-column.drag-over {
+    border-color: var(--border-focus);
+    background-color: var(--primary-light);
+}
 
 .column-header {
     padding: 14px 16px;
@@ -337,11 +341,17 @@ body {
     border-radius: 10px;
     padding: 12px;
     box-shadow: var(--shadow-sm);
+    cursor: grab;
     transition: var(--transition-smooth);
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+.task-card:active { cursor: grabbing; }
+.task-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
 }
 .task-card:hover {
     box-shadow: var(--shadow-md);

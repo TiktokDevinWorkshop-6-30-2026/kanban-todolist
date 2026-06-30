@@ -37,6 +37,14 @@ function createTaskCardDOM(task) {
     card.className = `task-card priority-${task.priority}`;
     card.dataset.id = task.id;
 
+    card.setAttribute('draggable', 'true');
+    card.addEventListener('dragstart', (e) => {
+        card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', task.id);
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
     const descMarkup = task.desc
         ? `<p class="task-desc-excerpt">${task.desc}</p>`
         : `<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>`;
