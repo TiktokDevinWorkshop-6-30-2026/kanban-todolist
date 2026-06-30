@@ -9,9 +9,12 @@ function render() {
 
     state.tasks.forEach(task => {
         const row = document.createElement('div');
-        row.className = 'task-row';
+        row.className = 'task-row' + (task.done ? ' done' : '');
         row.innerHTML = `
-            <span class="task-title">${task.title}</span>
+            <div class="task-left">
+                <input type="checkbox" class="done-checkbox" ${task.done ? 'checked' : ''} onchange="toggleDone('${task.id}')" title="Mark as done">
+                <span class="task-title">${task.title}</span>
+            </div>
             <button class="delete-btn" onclick="deleteTask('${task.id}')" title="Delete task">&times;</button>
         `;
         taskList.appendChild(row);
