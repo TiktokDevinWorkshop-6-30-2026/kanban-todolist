@@ -120,6 +120,10 @@ function render() {
     document.getElementById('todoTabBadge').textContent = counts.todo;
     document.getElementById('progressTabBadge').textContent = counts.progress;
     document.getElementById('doneTabBadge').textContent = counts.done;
+
+    /* Update metric dashboard after every render */
+    if (typeof recordMetricSnapshot === 'function') recordMetricSnapshot();
+    if (typeof renderDashboard === 'function') renderDashboard();
 }
 
 function renderTimestampsOnly() {

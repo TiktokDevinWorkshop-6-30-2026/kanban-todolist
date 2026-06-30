@@ -188,6 +188,35 @@
 
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- METRIC DASHBOARD -->
+    <section class="dashboard-section" id="dashboardSection">
+        <div class="dashboard-header">
+            <h2 class="dashboard-title"><i class="fas fa-chart-line"></i> Metric Dashboard</h2>
+            <p class="dashboard-subtitle">Task trend over time</p>
+        </div>
+        <div class="dashboard-summary-cards">
+            <div class="summary-card summary-todo">
+                <div class="summary-label">To Do</div>
+                <div class="summary-value" id="metricTodo">0</div>
+            </div>
+            <div class="summary-card summary-progress">
+                <div class="summary-label">In Progress</div>
+                <div class="summary-value" id="metricProgress">0</div>
+            </div>
+            <div class="summary-card summary-done">
+                <div class="summary-label">Done</div>
+                <div class="summary-value" id="metricDone">0</div>
+            </div>
+            <div class="summary-card summary-total">
+                <div class="summary-label">Total</div>
+                <div class="summary-value" id="metricTotal">0</div>
+            </div>
+        </div>
+        <div class="dashboard-chart-wrapper">
+            <canvas id="dashboardCanvas"></canvas>
+        </div>
+    </section>
+
     <script src="js/state.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/toast.js"></script>
@@ -195,6 +224,7 @@
     <script src="js/render.js"></script>
     <script src="js/tasks.js"></script>
     <script src="js/menus.js"></script>
+    <script src="js/dashboard.js"></script>
     <script src="js/events.js"></script>
     <script src="js/main.js"></script>
 </body>
