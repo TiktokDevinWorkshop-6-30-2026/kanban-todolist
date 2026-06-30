@@ -46,6 +46,10 @@
                     <option value="title-asc">Title (A-Z)</option>
                 </select>
 
+                <button id="toggle3DBtn" class="btn-bulk-neutral" title="Switch to 3D View" onclick="toggle3DView()">
+                    <i class="fas fa-cube"></i> 3D View
+                </button>
+
                 <div class="header-actions-dropdown">
                     <button id="headerActionsBtn" class="btn-bulk-neutral" title="Board actions">
                         <i class="fas fa-ellipsis-h"></i> Actions
@@ -146,6 +150,21 @@
             </section>
 
         </main>
+
+        <!-- 3D VIEW CONTAINER (hidden by default) -->
+        <div class="view-3d-container hidden" id="view3dContainer">
+            <div class="view-3d-toolbar">
+                <button class="shape-option active" data-shape="cube" onclick="setShape('cube')">Cube</button>
+                <button class="shape-option" data-shape="pyramid" onclick="setShape('pyramid')">Pyramid</button>
+                <button class="shape-option" data-shape="prism" onclick="setShape('prism')">Hex Prism</button>
+                <button class="shape-option" data-shape="diamond" onclick="setShape('diamond')">Diamond</button>
+                <button class="shape-option" data-shape="cylinder" onclick="setShape('cylinder')">Cylinder</button>
+                <div class="toolbar-separator"></div>
+                <button class="btn-3d-tool active" id="autoRotateBtn" onclick="toggleAutoRotate()"><i class="fas fa-sync-alt"></i> Auto-Rotate</button>
+            </div>
+            <div class="scene-3d" id="scene3d"></div>
+            <div class="view-3d-hint"><i class="fas fa-hand-pointer"></i> Drag to rotate &middot; Click cards to edit</div>
+        </div>
     </div>
 
     <!-- COMBINED TASK DETAILS / EDIT MODAL -->
@@ -246,6 +265,7 @@
     <script src="js/render.js"></script>
     <script src="js/tasks.js"></script>
     <script src="js/menus.js"></script>
+    <script src="js/view3d.js"></script>
     <script src="js/events.js"></script>
     <script src="js/main.js"></script>
 </body>

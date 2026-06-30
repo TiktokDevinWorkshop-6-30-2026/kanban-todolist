@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadFromStorage();
     setupEventListeners();
+    setup3DInteraction();
     render();
 
     setInterval(() => {
