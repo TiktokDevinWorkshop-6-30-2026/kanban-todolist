@@ -19,7 +19,7 @@
     --accent: #ff0050;
     --accent-hover: #cc0040;
     /* Priority colors */
-    --priority-low-bg: #f0fdf4;   --priority-low-text: #16a34a;   --priority-low-border: #10b981;
+    --priority-low-bg: #eff6ff;   --priority-low-text: #2563eb;   --priority-low-border: #60a5fa;
     --priority-medium-bg: #fffbeb; --priority-medium-text: #d97706; --priority-medium-border: #f59e0b;
     --priority-high-bg: #fef2f2;  --priority-high-text: #dc2626;  --priority-high-border: #f43f5e;
     /* Elevation */
