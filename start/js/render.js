@@ -50,6 +50,11 @@ function createTaskCardDOM(task) {
         e.dataTransfer.setData('text/plain', task.id);
     });
     card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    card.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showContextMenu(e.clientX, e.clientY, task.id);
+    });
 
     const descMarkup = task.desc
         ? `<p class="task-desc-excerpt">${task.desc}</p>`
@@ -68,7 +73,7 @@ function createTaskCardDOM(task) {
 
     card.innerHTML = `
         <div class="task-header">
-            <span class="badge-priority ${task.priority}">${task.priority}</span>
+            <span class="badge-priority ${task.priority}" onclick="openBadgePriorityMenu(event, '${task.id}')">${task.priority}</span>
             <button class="btn-card-action" title="Delete" onclick="deleteTask('${task.id}')"><i class="fas fa-trash-alt"></i></button>
         </div>
         <h4 class="task-title">${task.title}</h4>
@@ -142,6 +147,10 @@ function render() {
     document.getElementById(COLUMN_COUNTS.todo).textContent = counts.todo;
     document.getElementById(COLUMN_COUNTS.progress).textContent = counts.progress;
     document.getElementById(COLUMN_COUNTS.done).textContent = counts.done;
+
+    document.getElementById('todoTabBadge').textContent = counts.todo;
+    document.getElementById('progressTabBadge').textContent = counts.progress;
+    document.getElementById('doneTabBadge').textContent = counts.done;
 }
 
 // Refresh only the relative "time ago" labels without a full re-render.

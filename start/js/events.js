@@ -47,7 +47,78 @@ function setupEventListeners() {
     document.getElementById('priorityFilter').addEventListener('change', (e) => { state.filterPriority = e.target.value; saveToStorage(); render(); });
     document.getElementById('sortBySelect').addEventListener('change', (e) => { state.sortBy = e.target.value; saveToStorage(); render(); });
 
+    setupHeaderActions();
+    setupMobileTabs();
+    setupGlobalMenuDismissal();
     setupDragAndDrop();
+}
+
+function setupHeaderActions() {
+    const btn = document.getElementById('headerActionsBtn');
+    const menu = document.getElementById('headerActionsMenu');
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('hidden');
+    });
+
+    document.getElementById('actLoadDemo').addEventListener('click', async () => {
+        menu.classList.add('hidden');
+        if (await requestConfirmation('Load Sample Data', 'Replace the current board with the sample tasks?')) {
+            loadDemoData();
+            render();
+            showToast('Sample data loaded.', 'success');
+        }
+    });
+    document.getElementById('actCleanDone').addEventListener('click', async () => {
+        menu.classList.add('hidden');
+        if (await requestConfirmation('Clean Done', 'Permanently delete all completed tasks?')) {
+            state.tasks = state.tasks.filter(t => !t.completed);
+            saveToStorage();
+            render();
+            showToast('Cleared completed tasks.', 'success');
+        }
+    });
+    document.getElementById('actCleanAll').addEventListener('click', async () => {
+        menu.classList.add('hidden');
+        if (await requestConfirmation('Clean All', 'Permanently delete every task on the board?')) {
+            state.tasks = [];
+            saveToStorage();
+            render();
+            showToast('Board cleared.', 'success');
+        }
+    });
+}
+
+function setupMobileTabs() {
+    const buttons = document.querySelectorAll('.mobile-tab-btn');
+    applyActiveTab(state.activeTab);
+    buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            state.activeTab = btn.dataset.tab;
+            saveToStorage();
+            applyActiveTab(state.activeTab);
+        });
+    });
+}
+
+function applyActiveTab(tab) {
+    document.querySelectorAll('.mobile-tab-btn').forEach((b) => {
+        b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    document.querySelectorAll('.board-column').forEach((col) => {
+        col.classList.toggle('active-tab', col.getAttribute('data-column') === tab);
+    });
+}
+
+function setupGlobalMenuDismissal() {
+    document.addEventListener('click', (e) => {
+        hideContextMenu();
+        if (!e.target.closest('.badge-priority')) hideBadgePriorityMenu();
+        const actionsDropdown = e.target.closest('.header-actions-dropdown');
+        if (!actionsDropdown) document.getElementById('headerActionsMenu').classList.add('hidden');
+    });
+    document.addEventListener('scroll', hideContextMenu, true);
 }
 
 // Find the card the dragged element should be inserted before, based on cursor Y.

@@ -10,12 +10,12 @@ function addNewTodo() {
     const desc = descInput.value.trim();
 
     if (title.length < 3 || title.length > 40) {
-        alert('Title must be between 3 and 40 characters.');
+        showToast('Title must be between 3 and 40 characters.', 'error');
         input.focus();
         return;
     }
     if (desc.length > 150) {
-        alert('Description must be 150 characters or fewer.');
+        showToast('Description must be 150 characters or fewer.', 'error');
         descInput.focus();
         return;
     }
@@ -40,6 +40,7 @@ function addNewTodo() {
     document.getElementById('descCounter').textContent = '150 left';
     document.getElementById('addTodoCard').classList.remove('expanded');
     render();
+    showToast('Task added.', 'success');
 }
 
 async function deleteTask(taskId) {
@@ -50,6 +51,7 @@ async function deleteTask(taskId) {
     state.tasks = state.tasks.filter(t => t.id !== taskId);
     saveToStorage();
     render();
+    showToast('Task deleted.', 'success');
 }
 
 function openTaskModal(taskId) {
@@ -92,12 +94,12 @@ function saveEditedTask() {
     const desc = descInput.value.trim();
 
     if (title.length < 3 || title.length > 40) {
-        alert('Title must be between 3 and 40 characters.');
+        showToast('Title must be between 3 and 40 characters.', 'error');
         titleInput.focus();
         return;
     }
     if (desc.length > 150) {
-        alert('Description must be 150 characters or fewer.');
+        showToast('Description must be 150 characters or fewer.', 'error');
         descInput.focus();
         return;
     }
@@ -109,6 +111,7 @@ function saveEditedTask() {
     saveToStorage();
     closeModal('taskModal');
     render();
+    showToast('Task updated.', 'success');
 }
 
 // Apply the To Do -> In Progress -> Done workflow rules to a column transition.
@@ -120,7 +123,7 @@ function applyColumnTransition(task, targetColumn) {
     // Must pass through In Progress before Done.
     if (targetColumn === 'done') {
         if (oldColumn === 'todo') {
-            alert('Move this task to In Progress before marking it Done.');
+            showToast('Move this task to In Progress before marking it Done.', 'warning');
             return false;
         }
         task.completed = true;
