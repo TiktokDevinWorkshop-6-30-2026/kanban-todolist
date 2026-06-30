@@ -69,4 +69,87 @@ function setupEventListeners() {
         state.sortBy = e.target.value;
         render();
     });
+
+    // Drag & drop on board columns
+    var columns = document.querySelectorAll('.board-column');
+    columns.forEach(function(col) {
+        col.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            col.classList.add('drag-over');
+        });
+        col.addEventListener('dragleave', function() {
+            col.classList.remove('drag-over');
+        });
+        col.addEventListener('drop', function(e) {
+            e.preventDefault();
+            col.classList.remove('drag-over');
+            moveTask(e.dataTransfer.getData('text/plain'), col.getAttribute('data-column'));
+        });
+    });
+
+    // Header Actions menu
+    var headerActionsBtn = document.getElementById('headerActionsBtn');
+    var headerActionsMenu = document.getElementById('headerActionsMenu');
+    if (headerActionsBtn && headerActionsMenu) {
+        headerActionsBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            headerActionsMenu.classList.toggle('hidden');
+        });
+
+        document.getElementById('actLoadDemo').addEventListener('click', function() {
+            headerActionsMenu.classList.add('hidden');
+            requestConfirmation('Load Sample Data', 'This will replace all current tasks with demo data. Continue?').then(function(confirmed) {
+                if (!confirmed) return;
+                loadDemoData();
+                render();
+                showToast('Sample data loaded.', 'success');
+            });
+        });
+
+        document.getElementById('actCleanDone').addEventListener('click', function() {
+            headerActionsMenu.classList.add('hidden');
+            requestConfirmation('Clean Done', 'Remove all completed tasks?').then(function(confirmed) {
+                if (!confirmed) return;
+                state.tasks = state.tasks.filter(function(t) { return !t.completed; });
+                saveToStorage();
+                render();
+                showToast('Completed tasks cleared.', 'success');
+            });
+        });
+
+        document.getElementById('actAbout').addEventListener('click', function() {
+            headerActionsMenu.classList.add('hidden');
+            openModal('aboutModal');
+        });
+
+        document.getElementById('actCleanAll').addEventListener('click', function() {
+            headerActionsMenu.classList.add('hidden');
+            requestConfirmation('Clean All Tasks', 'This will permanently delete ALL tasks. Are you sure?').then(function(confirmed) {
+                if (!confirmed) return;
+                state.tasks = [];
+                saveToStorage();
+                render();
+                showToast('All tasks cleared.', 'success');
+            });
+        });
+    }
+
+    // Mobile tabs
+    var mobileTabs = document.querySelectorAll('.mobile-tab-btn');
+    mobileTabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            var targetTab = tab.getAttribute('data-tab');
+            state.activeTab = targetTab;
+
+            mobileTabs.forEach(function(t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+
+            var allCols = document.querySelectorAll('.board-column');
+            allCols.forEach(function(col) { col.classList.remove('active-tab'); });
+
+            var colMap = { todo: 'col-todo', progress: 'col-progress', done: 'col-done' };
+            var targetCol = document.querySelector('.board-column.' + colMap[targetTab]);
+            if (targetCol) targetCol.classList.add('active-tab');
+        });
+    });
 }

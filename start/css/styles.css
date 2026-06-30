@@ -782,11 +782,314 @@ body {
 }
 
 /* ==========================================================================
-   8. RESPONSIVE
+   11. MOBILE PILL-STYLE SEGMENTED TABS
+   ========================================================================== */
+.mobile-board-tabs {
+    display: none;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card);
+    padding: 8px 12px;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.mobile-tab-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    outline: none;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition-smooth);
+}
+.mobile-tab-btn.active {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+.mobile-tab-btn .badge {
+    background-color: var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+.mobile-tab-btn.active .badge {
+    background-color: var(--primary);
+    color: var(--primary-contrast);
+}
+
+/* Drag styles */
+.task-card:active {
+    cursor: grabbing;
+}
+.task-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+}
+.board-column.drag-over {
+    border-color: var(--border-focus);
+    background-color: var(--primary-light);
+}
+
+/* ==========================================================================
+   12. BADGE PRIORITY DROPDOWN
+   ========================================================================== */
+.badge-dropdown-menu {
+    position: absolute;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 100px;
+}
+.badge-dropdown-item {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    transition: var(--transition-smooth);
+}
+.badge-dropdown-item.low { color: var(--priority-low-text); }
+.badge-dropdown-item.low:hover { background-color: var(--priority-low-bg); }
+.badge-dropdown-item.medium { color: var(--priority-medium-text); }
+.badge-dropdown-item.medium:hover { background-color: var(--priority-medium-bg); }
+.badge-dropdown-item.high { color: var(--priority-high-text); }
+.badge-dropdown-item.high:hover { background-color: var(--priority-high-bg); }
+
+/* ==========================================================================
+   13. CONTEXT MENU
+   ========================================================================== */
+.custom-context-menu {
+    position: absolute;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    width: 160px;
+    z-index: 9999;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.context-menu-item:hover {
+    background-color: var(--bg-column);
+    color: var(--text-primary);
+}
+.context-menu-item.danger {
+    color: #ef4444;
+}
+.context-menu-item.danger:hover {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+.context-menu-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.context-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 4px 2px;
+}
+
+/* ==========================================================================
+   14. TOAST NOTIFICATIONS
+   ========================================================================== */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 11000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+.toast {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow-lg);
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 250px;
+    max-width: 350px;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+    pointer-events: auto;
+    opacity: 0;
+}
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+.toast i { font-size: 1rem; }
+.toast-info { border-left-color: var(--primary); }
+.toast-info i { color: var(--primary); }
+.toast-success { border-left-color: #10b981; }
+.toast-success i { color: #10b981; }
+.toast-warning { border-left-color: #f59e0b; }
+.toast-warning i { color: #f59e0b; }
+.toast-error { border-left-color: #ef4444; }
+.toast-error i { color: #ef4444; }
+.toast-message {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   15. HEADER ACTIONS DROPDOWN
+   ========================================================================== */
+.btn-bulk-neutral {
+    background-color: var(--bg-card);
+    border: 1px solid var(--primary-light);
+    color: var(--primary-contrast);
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition-smooth);
+}
+.btn-bulk-neutral:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+}
+.header-actions-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.header-actions-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    width: 190px;
+    z-index: 9999;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* ==========================================================================
+   16. DEVIN INTEGRATION STYLES
+   ========================================================================== */
+.btn-card-action.btn-devin {
+    color: var(--primary-contrast);
+}
+.btn-card-action.btn-devin:hover {
+    background-color: var(--primary-light);
+}
+.btn-card-action.btn-devin-open {
+    color: var(--primary-contrast);
+}
+.btn-card-action.btn-devin-open:hover {
+    background-color: var(--primary-light);
+}
+
+.devin-status-pill {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: var(--primary-light);
+    color: var(--primary-contrast);
+    white-space: nowrap;
+}
+.devin-status-pill i {
+    font-size: 0.6rem;
+}
+.devin-status-pill.devin-finished,
+.devin-status-pill.devin-complete {
+    background-color: #ecfdf5;
+    color: #047857;
+}
+.devin-status-pill.devin-error,
+.devin-status-pill.devin-suspended {
+    background-color: #fef2f2;
+    color: #b91c1c;
+}
+.devin-status-pill.devin-waiting,
+.devin-status-pill.devin-blocked {
+    background-color: #fffbeb;
+    color: #b45309;
+}
+.devin-status-pill.devin-clickable {
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.devin-status-pill.devin-clickable:hover {
+    filter: brightness(0.96);
+    box-shadow: 0 0 0 2px var(--focus-glow);
+}
+.devin-status-pill.devin-working {
+    animation: devin-pulse 1.4s ease-in-out infinite;
+}
+@keyframes devin-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+
+#devinPromptInput {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ==========================================================================
+   17. RESPONSIVE
    ========================================================================== */
 @media (max-width: 768px) {
     body {
         padding: 12px 12px 8px 12px;
+    }
+
+    .app-card {
+        height: calc(100% - 40px);
     }
 
     .app-header {
@@ -800,6 +1103,36 @@ body {
         text-align: center;
         font-size: 1.3rem;
         margin-bottom: 2px;
+    }
+
+    .header-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .search-wrapper {
+        grid-column: span 2;
+    }
+    .search-input {
+        width: 100% !important;
+        font-size: 16px !important;
+    }
+
+    .select-filter {
+        width: 100%;
+        font-size: 0.8rem;
+        padding: 6px 8px;
+        height: 36px;
+    }
+
+    .btn-bulk-neutral {
+        width: 100%;
+        font-size: 0.8rem;
+        padding: 6px 8px;
+        justify-content: center;
+        height: 36px;
     }
 
     .add-todo-wrapper {
@@ -835,9 +1168,38 @@ body {
         height: 65px;
     }
 
+    .mobile-board-tabs {
+        display: flex;
+    }
+
     .board-container {
         grid-template-columns: 1fr;
         padding: 12px;
-        overflow-y: auto;
+        overflow: hidden;
+    }
+
+    .board-column {
+        display: none;
+        height: 100%;
+    }
+    .board-column.active-tab {
+        display: flex;
+    }
+
+    @media (max-width: 480px) {
+        .modal-container {
+            width: 95%;
+            margin: 10px;
+        }
+        .modal-body {
+            padding: 16px;
+            gap: 12px;
+        }
+        .modal-footer {
+            padding: 10px 16px;
+        }
+        .form-input, .form-textarea {
+            font-size: 16px !important;
+        }
     }
 }

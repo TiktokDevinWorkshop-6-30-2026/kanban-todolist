@@ -3,6 +3,25 @@ function createTaskCardDOM(task) {
     card.className = 'task-card priority-' + task.priority;
     card.setAttribute('data-id', task.id);
 
+    // Drag & drop (not for Done tasks)
+    if (task.column !== 'done') {
+        card.setAttribute('draggable', 'true');
+        card.addEventListener('dragstart', function(e) {
+            card.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', task.id);
+        });
+        card.addEventListener('dragend', function() {
+            card.classList.remove('dragging');
+        });
+    }
+
+    // Right-click context menu
+    card.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showContextMenu(e.clientX, e.clientY, task.id);
+    });
+
     var descHtml = task.desc
         ? '<p class="task-desc-excerpt">' + task.desc + '</p>'
         : '<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>';
@@ -26,9 +45,32 @@ function createTaskCardDOM(task) {
         editTitle = 'Edit Task';
     }
 
+    // Devin status pill
+    var devinPill = '';
+    if (task.devinSessionId) {
+        var working = isDevinWorking(task);
+        var label = devinStatusLabel(task);
+        var labelSlug = label.replace(/\s+/g, '-').toLowerCase();
+        var pillIcon = working ? 'fa-spinner fa-spin' : 'fa-robot';
+        var workingClass = working ? ' devin-working' : '';
+        var clickableClass = task.devinSessionUrl ? ' devin-clickable' : '';
+        var pillTitle = task.devinSessionUrl ? 'Open Devin session' : 'Devin session status';
+        var clickAttr = task.devinSessionUrl ? ' onclick="openDevinSession(\'' + task.id + '\')"' : '';
+        devinPill = '<span class="devin-status-pill devin-' + labelSlug + workingClass + clickableClass + '" title="' + pillTitle + '"' + clickAttr + '><i class="fas ' + pillIcon + '"></i> ' + label + '</span>';
+    }
+
+    // Devin button
+    var devinButton = '';
+    if (devinEnabled && task.column === 'todo' && !task.devinSessionId) {
+        devinButton = '<button class="btn-card-action btn-devin" onclick="openDevinModal(\'' + task.id + '\')" title="Run with Devin"><i class="fas fa-robot"></i></button>';
+    } else if (task.devinSessionId) {
+        devinButton = '<button class="btn-card-action btn-devin-open" onclick="openDevinSession(\'' + task.id + '\')" title="Open Devin session"><i class="fas fa-arrow-up-right-from-square"></i></button>';
+    }
+
     card.innerHTML =
         '<div class="task-header">' +
-            '<span class="badge-priority ' + task.priority + '">' + task.priority + '</span>' +
+            '<span class="badge-priority ' + task.priority + '" onclick="openBadgePriorityMenu(event, \'' + task.id + '\')">' + task.priority + '</span>' +
+            devinPill +
             '<span class="task-time">' + formatRelativeTime(task.createdAt) + '</span>' +
         '</div>' +
         '<h4 class="task-title">' + task.title + '</h4>' +
@@ -36,6 +78,7 @@ function createTaskCardDOM(task) {
         '<div class="task-footer">' +
             '<div class="card-actions-left">' +
                 '<button class="btn-card-action" onclick="openTaskModal(\'' + task.id + '\')" title="' + editTitle + '"><i class="fas ' + editIcon + '"></i></button>' +
+                devinButton +
                 '<button class="btn-card-action" onclick="deleteTask(\'' + task.id + '\')" title="Delete task"><i class="fas fa-trash-alt"></i></button>' +
             '</div>' +
             '<div class="card-nav-arrows">' + arrowsHtml + '</div>' +
@@ -119,6 +162,14 @@ function render() {
     document.getElementById('countTodo').textContent = counts.todo;
     document.getElementById('countProgress').textContent = counts.progress;
     document.getElementById('countDone').textContent = counts.done;
+
+    // Mobile tab badges
+    var todoTabBadge = document.getElementById('todoTabBadge');
+    var progressTabBadge = document.getElementById('progressTabBadge');
+    var doneTabBadge = document.getElementById('doneTabBadge');
+    if (todoTabBadge) todoTabBadge.textContent = counts.todo;
+    if (progressTabBadge) progressTabBadge.textContent = counts.progress;
+    if (doneTabBadge) doneTabBadge.textContent = counts.done;
 
     checkEmptyState(bodyTodo, 'todo');
     checkEmptyState(bodyProgress, 'progress');

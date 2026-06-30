@@ -12,4 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     render();
     setInterval(renderTimestampsOnly, 30000);
+
+    // Devin integration (no-op when opened via file://)
+    refreshDevinConfig();
+    startDevinPolling();
+    pollDevinSessions();
 });
