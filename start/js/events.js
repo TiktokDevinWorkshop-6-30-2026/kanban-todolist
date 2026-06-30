@@ -23,4 +23,20 @@ function setupEventListeners() {
             addCard.classList.remove('expanded');
         }
     });
+
+    // Edit modal: save + counters
+    document.getElementById('saveEditBtn').addEventListener('click', saveEditedTask);
+    const modalTitle = document.getElementById('taskTitleInput');
+    const modalDesc = document.getElementById('taskDescInput');
+    modalTitle.addEventListener('input', () => {
+        document.getElementById('taskTitleCounter').textContent = `${40 - modalTitle.value.length} left`;
+    });
+    modalDesc.addEventListener('input', () => {
+        document.getElementById('taskDescCounter').textContent = `${150 - modalDesc.value.length} left`;
+    });
+
+    // Search / filter / sort
+    document.getElementById('searchInput').addEventListener('input', (e) => { state.searchQuery = e.target.value.trim(); render(); });
+    document.getElementById('priorityFilter').addEventListener('change', (e) => { state.filterPriority = e.target.value; saveToStorage(); render(); });
+    document.getElementById('sortBySelect').addEventListener('change', (e) => { state.sortBy = e.target.value; saveToStorage(); render(); });
 }

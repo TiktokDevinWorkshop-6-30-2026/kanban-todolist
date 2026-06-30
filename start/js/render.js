@@ -30,18 +30,24 @@ function createTaskCardDOM(task) {
         `<button class="btn-arrow" onclick="moveTask('${task.id}', '${a.target}')" title="${a.title}"><i class="fas ${a.icon}"></i></button>`
     ).join('');
 
+    const isDone = task.column === 'done';
+    const editIcon = isDone ? 'fa-expand-alt' : 'fa-pencil-alt';
+    const editTitle = isDone ? 'View Task' : 'Edit Task';
+
     card.innerHTML = `
         <div class="task-card-header">
             <div class="task-card-title-group">
                 <span class="badge-priority ${task.priority}">${task.priority}</span>
                 <h4 class="task-title">${task.title}</h4>
             </div>
-            <button class="btn-card-action" onclick="deleteTask('${task.id}')" title="Delete task">
-                <i class="fas fa-trash-alt"></i>
-            </button>
+            <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
         </div>
         ${descHtml}
         <div class="task-footer">
+            <div class="card-actions-left">
+                <button class="btn-card-action" onclick="openTaskModal('${task.id}')" title="${editTitle}"><i class="fas ${editIcon}"></i></button>
+                <button class="btn-card-action" onclick="deleteTask('${task.id}')" title="Delete task"><i class="fas fa-trash-alt"></i></button>
+            </div>
             <div class="card-nav-arrows">${arrows}</div>
         </div>
     `;
@@ -65,9 +71,29 @@ function render() {
     };
     const counts = { todo: 0, progress: 0, done: 0 };
 
+    let filteredTasks = [...state.tasks];
+    if (state.searchQuery) {
+        const q = state.searchQuery.toLowerCase();
+        filteredTasks = filteredTasks.filter(t =>
+            t.title.toLowerCase().includes(q) || (t.desc || '').toLowerCase().includes(q));
+    }
+    if (state.filterPriority !== 'all') {
+        filteredTasks = filteredTasks.filter(t => t.priority === state.filterPriority);
+    }
+    filteredTasks.sort((a, b) => {
+        if (state.sortBy === 'date-desc') return b.createdAt - a.createdAt;
+        if (state.sortBy === 'date-asc')  return a.createdAt - b.createdAt;
+        if (state.sortBy === 'priority-desc') {
+            const w = { high: 3, medium: 2, low: 1 };
+            return w[b.priority] - w[a.priority];
+        }
+        if (state.sortBy === 'title-asc') return a.title.localeCompare(b.title);
+        return 0;
+    });
+
     Object.values(bodies).forEach(b => b.innerHTML = '');
 
-    state.tasks.forEach(task => {
+    filteredTasks.forEach(task => {
         const body = bodies[task.column];
         if (!body) return;
         body.appendChild(createTaskCardDOM(task));
@@ -79,4 +105,13 @@ function render() {
     document.getElementById('countDone').textContent = counts.done;
 
     Object.keys(bodies).forEach(column => checkEmptyState(bodies[column], column));
+}
+
+function renderTimestampsOnly() {
+    document.querySelectorAll('.task-card').forEach(card => {
+        const task = state.tasks.find(t => t.id === card.getAttribute('data-id'));
+        if (!task) return;
+        const timeEl = card.querySelector('.task-time');
+        if (timeEl) timeEl.textContent = formatRelativeTime(task.createdAt);
+    });
 }
