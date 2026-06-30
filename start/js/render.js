@@ -27,14 +27,23 @@ function createTaskCardDOM(task) {
         ? `<p class="task-desc-excerpt">${task.desc}</p>`
         : `<p class="task-desc-excerpt" style="color:var(--text-muted); font-style:italic;">No description provided.</p>`;
 
+    const isDone = task.column === 'done';
+    const editBtn = isDone
+        ? `<button class="btn-card-action" onclick="openTaskModal('${task.id}')" title="View Task"><i class="fas fa-expand-alt"></i></button>`
+        : `<button class="btn-card-action" onclick="openTaskModal('${task.id}')" title="Edit Task"><i class="fas fa-pencil-alt"></i></button>`;
+
     card.innerHTML = `
         <div class="task-header">
             <span class="badge-priority ${task.priority}">${task.priority}</span>
-            <button class="btn-card-action" onclick="deleteTask('${task.id}')" title="Delete task"><i class="fas fa-trash-alt"></i></button>
+            <span class="task-time">${formatRelativeTime(task.createdAt)}</span>
         </div>
         <h4 class="task-title">${task.title}</h4>
         ${descHTML}
         <div class="task-footer">
+            <div class="card-actions-left">
+                ${editBtn}
+                <button class="btn-card-action" onclick="deleteTask('${task.id}')" title="Delete task"><i class="fas fa-trash-alt"></i></button>
+            </div>
             <div class="card-nav-arrows">${moveButtonsHTML(task)}</div>
         </div>
     `;
@@ -49,13 +58,38 @@ function checkEmptyState(columnKey, bodyEl) {
     bodyEl.appendChild(placeholder);
 }
 
+function getVisibleTasks() {
+    let filteredTasks = [...state.tasks];
+
+    if (state.searchQuery) {
+        const q = state.searchQuery.toLowerCase();
+        filteredTasks = filteredTasks.filter(t =>
+            t.title.toLowerCase().includes(q) || (t.desc || '').toLowerCase().includes(q));
+    }
+    if (state.filterPriority !== 'all') {
+        filteredTasks = filteredTasks.filter(t => t.priority === state.filterPriority);
+    }
+    filteredTasks.sort((a, b) => {
+        if (state.sortBy === 'date-desc') return b.createdAt - a.createdAt;
+        if (state.sortBy === 'date-asc')  return a.createdAt - b.createdAt;
+        if (state.sortBy === 'priority-desc') {
+            const w = { high: 3, medium: 2, low: 1 };
+            return w[b.priority] - w[a.priority];
+        }
+        if (state.sortBy === 'title-asc') return a.title.localeCompare(b.title);
+        return 0;
+    });
+    return filteredTasks;
+}
+
 function render() {
+    const visibleTasks = getVisibleTasks();
     const counts = { todo: 0, progress: 0, done: 0 };
     Object.keys(COLUMN_META).forEach(key => {
         document.getElementById(COLUMN_META[key].body).innerHTML = '';
     });
 
-    state.tasks.forEach(task => {
+    visibleTasks.forEach(task => {
         const meta = COLUMN_META[task.column];
         if (!meta) return;
         document.getElementById(meta.body).appendChild(createTaskCardDOM(task));
@@ -68,5 +102,14 @@ function render() {
         if (counts[key] === 0) {
             checkEmptyState(key, document.getElementById(meta.body));
         }
+    });
+}
+
+function renderTimestampsOnly() {
+    document.querySelectorAll('.task-card').forEach(card => {
+        const task = state.tasks.find(t => t.id === card.dataset.id);
+        if (!task) return;
+        const timeEl = card.querySelector('.task-time');
+        if (timeEl) timeEl.textContent = formatRelativeTime(task.createdAt);
     });
 }
