@@ -23,7 +23,10 @@ function addNewTodo() {
         title,
         desc,
         priority,
-        createdAt: Date.now()
+        column: 'todo',
+        createdAt: Date.now(),
+        editedAt: null,
+        completed: false
     });
     saveToStorage();
 
@@ -39,6 +42,28 @@ function addNewTodo() {
 
 function deleteTask(taskId) {
     state.tasks = state.tasks.filter(t => t.id !== taskId);
+    saveToStorage();
+    render();
+}
+
+function moveTask(taskId, targetColumn) {
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task || task.column === targetColumn) return;
+    const oldColumn = task.column;
+
+    if (targetColumn === 'done') {
+        if (oldColumn === 'todo') {
+            alert('Move this task to In Progress before marking it Done.');
+            return;
+        }
+        task.completed = true;
+    }
+    if (targetColumn === 'todo') task.completed = false;
+    if ((oldColumn === 'done' || oldColumn === 'progress') && (targetColumn === 'todo' || targetColumn === 'progress')) {
+        task.completed = false;
+    }
+
+    task.column = targetColumn;
     saveToStorage();
     render();
 }
