@@ -282,6 +282,10 @@ body {
     overflow: hidden;
     transition: var(--transition-smooth);
 }
+.board-column.drag-over {
+    border-color: var(--border-focus);
+    background-color: var(--primary-light);
+}
 
 .column-header {
     padding: 14px 16px;
@@ -337,12 +341,20 @@ body {
     border-radius: 10px;
     padding: 12px;
     box-shadow: var(--shadow-sm);
+    cursor: grab;
     transition: var(--transition-smooth);
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 8px;
     user-select: none;
+}
+.task-card:active {
+    cursor: grabbing;
+}
+.task-card.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
 }
 .task-card:hover {
     box-shadow: var(--shadow-md);
@@ -678,11 +690,303 @@ body {
     color: var(--text-primary);
 }
 
+/* ==========================================================================
+   9. BADGE DROPDOWN
+   ========================================================================== */
+.badge-dropdown-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 100px;
+}
+.badge-dropdown-item {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    transition: var(--transition-smooth);
+}
+.badge-dropdown-item.low { color: var(--priority-low-text); }
+.badge-dropdown-item.low:hover { background-color: var(--priority-low-bg); }
+.badge-dropdown-item.medium { color: var(--priority-medium-text); }
+.badge-dropdown-item.medium:hover { background-color: var(--priority-medium-bg); }
+.badge-dropdown-item.high { color: var(--priority-high-text); }
+.badge-dropdown-item.high:hover { background-color: var(--priority-high-bg); }
+
+/* ==========================================================================
+   10. CONTEXT MENU
+   ========================================================================== */
+.custom-context-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    width: 160px;
+    z-index: 9999;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.context-menu-item:hover {
+    background-color: #f1f5f9;
+    color: var(--text-primary);
+}
+.context-menu-item.danger { color: #ef4444; }
+.context-menu-item.danger:hover { background-color: #fef2f2; color: #dc2626; }
+.context-menu-item.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+.context-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 4px 2px;
+}
+
+/* ==========================================================================
+   11. HEADER ACTIONS DROPDOWN
+   ========================================================================== */
+.header-actions-dropdown {
+    position: relative;
+}
+.header-actions-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    padding: 4px;
+    min-width: 180px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.btn-bulk-neutral {
+    background-color: #fff;
+    border: 1px solid var(--primary-light);
+    color: var(--primary-contrast);
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition-smooth);
+}
+.btn-bulk-neutral:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+}
+
+/* ==========================================================================
+   12. MOBILE TABS
+   ========================================================================== */
+.mobile-board-tabs {
+    display: none;
+    border-bottom: 1px solid var(--border-color);
+    background: #ffffff;
+    padding: 6px;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.mobile-tab-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition-smooth);
+}
+.mobile-tab-btn.active {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+.mobile-tab-btn .badge {
+    background-color: #e2e8f0;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+.mobile-tab-btn.active .badge {
+    background-color: var(--primary);
+    color: var(--primary-contrast);
+}
+
+/* ==========================================================================
+   13. TOAST NOTIFICATIONS
+   ========================================================================== */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 11000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+.toast {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow-lg);
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 250px;
+    max-width: 350px;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+    pointer-events: auto;
+    opacity: 0;
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast i { font-size: 1rem; }
+.toast-info { border-left-color: var(--primary); }
+.toast-info i { color: var(--primary); }
+.toast-success { border-left-color: #10b981; }
+.toast-success i { color: #10b981; }
+.toast-warning { border-left-color: #f59e0b; }
+.toast-warning i { color: #f59e0b; }
+.toast-error { border-left-color: #ef4444; }
+.toast-error i { color: #ef4444; }
+.toast-message {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   14. DARK MODE TOGGLE BUTTON
+   ========================================================================== */
+.btn-dark-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    outline: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: var(--transition-smooth);
+}
+.btn-dark-toggle:hover {
+    background-color: #f1f5f9;
+    color: var(--text-primary);
+}
+
 /* Utility */
 .hidden { display: none !important; }
 
 /* ==========================================================================
    9. RESPONSIVE
+   ========================================================================== */
+/* ==========================================================================
+   15. DARK MODE
+   ========================================================================== */
+body.dark-mode {
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --border-color: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --primary-light: #083344;
+    --primary-contrast: #e0fffe;
+    --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -4px rgba(0,0,0,0.3);
+    --priority-low-bg: #064e3b;
+    --priority-low-text: #6ee7b7;
+    --priority-medium-bg: #78350f;
+    --priority-medium-text: #fcd34d;
+    --priority-high-bg: #7f1d1d;
+    --priority-high-text: #fca5a5;
+}
+body.dark-mode .app-header { background: #1e293b; }
+body.dark-mode .add-todo-wrapper { background-color: #0f172a; }
+body.dark-mode .add-todo-card { background: #1e293b; }
+body.dark-mode .add-todo-desc-row { background-color: #1a2332; }
+body.dark-mode .title-input-field { color: var(--text-primary); background: transparent; }
+body.dark-mode .desc-textarea-field { color: var(--text-secondary); }
+body.dark-mode .select-filter { background-color: #1e293b; color: var(--text-secondary); }
+body.dark-mode .board-container { background-color: #1e293b; }
+body.dark-mode .board-column { background-color: #0f172a; }
+body.dark-mode .column-count { background-color: #334155; color: var(--text-secondary); }
+body.dark-mode .task-card:hover { border-color: #475569; }
+body.dark-mode .task-footer { border-top-color: #334155; }
+body.dark-mode .btn-card-action:hover { background-color: #334155; }
+body.dark-mode .btn-arrow { background: #334155; }
+body.dark-mode .btn-arrow:hover { background-color: #475569; }
+body.dark-mode .empty-column-placeholder i { color: #475569; }
+body.dark-mode .modal-container { background-color: #1e293b; }
+body.dark-mode .modal-footer { background-color: #0f172a; }
+body.dark-mode .meta-list { background-color: #0f172a; }
+body.dark-mode .form-input { background: #0f172a; color: var(--text-primary); }
+body.dark-mode .form-textarea { background: #0f172a; color: var(--text-primary); }
+body.dark-mode .btn-secondary { background-color: #334155; color: var(--text-secondary); border-color: #475569; }
+body.dark-mode .btn-secondary:hover { background-color: #475569; color: var(--text-primary); }
+body.dark-mode .btn-dark-toggle { color: #fbbf24; }
+body.dark-mode .btn-dark-toggle:hover { background-color: #334155; color: #fcd34d; }
+body.dark-mode .logo .todo-text { color: #f1f5f9; }
+body.dark-mode .search-input { background: #0f172a; color: var(--text-primary); }
+body.dark-mode .custom-context-menu { background: #1e293b; }
+body.dark-mode .context-menu-item:hover { background-color: #334155; }
+body.dark-mode .badge-dropdown-menu { background: #1e293b; }
+body.dark-mode .header-actions-menu { background: #1e293b; }
+body.dark-mode .btn-bulk-neutral { background-color: #1e293b; color: var(--text-secondary); border-color: #334155; }
+body.dark-mode .btn-bulk-neutral:hover { background-color: #334155; }
+body.dark-mode .mobile-board-tabs { background: #1e293b; }
+body.dark-mode .mobile-tab-btn { background: #334155; color: var(--text-secondary); }
+body.dark-mode .mobile-tab-btn.active { background-color: var(--primary-light); color: var(--primary); }
+body.dark-mode .mobile-tab-btn .badge { background-color: #475569; }
+body.dark-mode .toast { background-color: #1e293b; }
+body.dark-mode .board-column.drag-over { background-color: #083344; }
+
+/* ==========================================================================
+   16. RESPONSIVE
    ========================================================================== */
 @media (max-width: 768px) {
     body { padding: 12px 12px 8px 12px; }
@@ -694,6 +998,17 @@ body {
         align-items: stretch;
     }
     .logo { text-align: center; font-size: 1.3rem; margin-bottom: 2px; }
+
+    .header-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        width: 100%;
+    }
+    .search-wrapper { grid-column: span 2; }
+    .search-input { width: 100% !important; font-size: 16px !important; }
+    .select-filter { width: 100%; font-size: 0.8rem; padding: 6px 8px; height: 36px; }
+    .btn-bulk-neutral { width: 100%; font-size: 0.8rem; padding: 6px 8px; justify-content: center; height: 36px; }
 
     .add-todo-wrapper { padding: 10px 12px; }
     .add-todo-main-row {
@@ -713,10 +1028,16 @@ body {
     .add-todo-card.expanded .add-todo-desc-row { max-height: 100px; }
     .desc-textarea-field { font-size: 16px !important; height: 65px; }
 
+    .mobile-board-tabs { display: flex; }
+
     .board-container {
         grid-template-columns: 1fr;
         padding: 12px;
         overflow: hidden;
     }
-    .board-column { height: 100%; }
+    .board-column {
+        display: none;
+        height: 100%;
+    }
+    .board-column.active-tab { display: flex; }
 }
